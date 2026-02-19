@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
+from typing import List
 
 class Settings(BaseSettings):
     app_name: str = "FormBuilder API"
@@ -14,8 +15,14 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24 * 7  # 7 days
     
-    # CORS
-    cors_origins: list = ["*"]
+    # CORS - string separado por comas
+    cors_origins: str = "*"
+    
+    @property
+    def cors_origins_list(self) -> List[str]:
+        if self.cors_origins == "*":
+            return ["*"]
+        return [origin.strip() for origin in self.cors_origins.split(",")]
     
     # Upload
     upload_dir: str = "uploads"
