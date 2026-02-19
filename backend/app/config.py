@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     debug: bool = False
     
     # Database
-    database_url: str = "sqlite+aiosqlite:///./forms.db"
+    database_url: str = "postgresql+asyncpg://jesus:password@localhost:5432/formularios"
     
     # JWT
     secret_key: str = "your-secret-key-change-in-production-2024"
