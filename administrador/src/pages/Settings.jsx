@@ -3,7 +3,7 @@ import {
   HiOutlineCog, 
   HiOutlineBell, 
   HiOutlineLockClosed, 
-  HiOutlineWrench,
+  HiOutlineAdjustments,
   HiOutlineTrash,
   HiOutlineUpload,
   HiOutlineSave
@@ -188,7 +188,7 @@ function Settings() {
         {/* Maintenance */}
         <div className="card">
           <div className="card-header">
-            <h3><HiOutlineWrench size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />Mantenimiento</h3>
+            <h3><HiOutlineAdjustments size={20} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />Mantenimiento</h3>
           </div>
           <div className="card-body">
             <label style={{ 
