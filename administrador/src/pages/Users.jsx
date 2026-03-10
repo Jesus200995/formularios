@@ -1,40 +1,58 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus } from 'react-icons/hi'
+
+const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
 
 function Users() {
   const [searchTerm, setSearchTerm] = useState('')
-  
-  const users = [
-    { id: 1, name: 'María García', email: 'maria@ejemplo.com', role: 'Usuario', status: 'active', lastLogin: '2026-02-19' },
-    { id: 2, name: 'Carlos López', email: 'carlos@ejemplo.com', role: 'Admin', status: 'active', lastLogin: '2026-02-19' },
-    { id: 3, name: 'Ana Martínez', email: 'ana@ejemplo.com', role: 'Usuario', status: 'inactive', lastLogin: '2026-02-15' },
-    { id: 4, name: 'Luis Rodríguez', email: 'luis@ejemplo.com', role: 'Editor', status: 'active', lastLogin: '2026-02-18' },
-    { id: 5, name: 'Sofia Hernández', email: 'sofia@ejemplo.com', role: 'Usuario', status: 'pending', lastLogin: '2026-02-17' },
-    { id: 6, name: 'Pedro Sánchez', email: 'pedro@ejemplo.com', role: 'Usuario', status: 'active', lastLogin: '2026-02-19' },
-    { id: 7, name: 'Laura Torres', email: 'laura@ejemplo.com', role: 'Editor', status: 'active', lastLogin: '2026-02-16' },
-    { id: 8, name: 'Miguel Díaz', email: 'miguel@ejemplo.com', role: 'Usuario', status: 'inactive', lastLogin: '2026-02-10' }
-  ]
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem('token') || 'dummy-token'
+      const response = await fetch(`${API_URL}/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUsers(data)
+      } else {
+        setError('Error al cargar usuarios')
+      }
+    } catch (err) {
+      console.error('Error:', err)
+      setError('Error de conexión')
+    } finally {
+      setLoading(false)
+    }
+  }
+  
   const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   )
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'active': return <span className="badge badge-success">Activo</span>
-      case 'inactive': return <span className="badge badge-danger">Inactivo</span>
-      case 'pending': return <span className="badge badge-warning">Pendiente</span>
-      default: return <span className="badge">{status}</span>
-    }
+    return status ? 
+      <span className="badge badge-success">Activo</span> : 
+      <span className="badge badge-danger">Inactivo</span>
   }
 
   const getRoleBadge = (role) => {
-    switch (role) {
-      case 'Admin': return <span className="badge badge-info">Admin</span>
-      case 'Editor': return <span className="badge badge-warning">Editor</span>
-      default: return <span className="badge" style={{ background: 'var(--gray-100)', color: 'var(--gray-600)' }}>{role}</span>
+    if (role === 'admin') {
+      return <span className="badge badge-info">Administrador</span>
     }
+    return <span className="badge" style={{ background: 'var(--gray-100)', color: 'var(--gray-600)' }}>Usuario</span>
   }
 
   return (
@@ -43,6 +61,12 @@ function Users() {
         <h1>Gestión de Usuarios</h1>
         <p>Administra los usuarios de la aplicación móvil</p>
       </div>
+
+      {error && (
+        <div className="alert alert-danger" style={{ marginBottom: 'var(--spacing-lg)' }}>
+          {error}
+        </div>
+      )}
 
       <div className="card">
         <div className="card-header">
@@ -54,78 +78,103 @@ function Users() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" onClick={() => window.location.href = '/register'}>
             <HiOutlinePlus size={16} /> Nuevo Usuario
           </button>
         </div>
         <div className="card-body" style={{ padding: 0 }}>
-          <div className="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Usuario</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                  <th>Último acceso</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map(user => (
-                  <tr key={user.id}>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{
-                          width: '36px',
-                          height: '36px',
-                          background: 'var(--primary-gradient)',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'white',
-                          fontSize: '0.875rem',
-                          fontWeight: '500'
-                        }}>
-                          {user.name.charAt(0)}
-                        </div>
-                        <span style={{ fontWeight: 500 }}>{user.name}</span>
-                      </div>
-                    </td>
-                    <td>{user.email}</td>
-                    <td>{getRoleBadge(user.role)}</td>
-                    <td>{getStatusBadge(user.status)}</td>
-                    <td>{user.lastLogin}</td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button className="btn btn-sm btn-secondary"><HiOutlinePencil size={14} /></button>
-                        <button className="btn btn-sm btn-secondary"><HiOutlineTrash size={14} /></button>
-                      </div>
-                    </td>
+          {loading ? (
+            <div style={{ padding: 'var(--spacing-2xl)', textAlign: 'center', color: 'var(--gray-500)' }}>
+              Cargando usuarios...
+            </div>
+          ) : (
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>CURP</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Registro</th>
+                    <th>Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" style={{ textAlign: 'center', padding: 'var(--spacing-xl)', color: 'var(--gray-500)' }}>
+                        {searchTerm ? 'No se encontraron usuarios' : 'No hay usuarios registrados'}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredUsers.map(user => (
+                      <tr key={user.id}>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{
+                              width: '36px',
+                              height: '36px',
+                              background: 'var(--primary-gradient)',
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: 'white',
+                              fontSize: '0.875rem',
+                              fontWeight: '500'
+                            }}>
+                              {(user.full_name || user.email)?.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div style={{ fontWeight: 500 }}>{user.full_name || 'Sin nombre'}</div>
+                              {user.first_name && (
+                                <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)' }}>
+                                  {user.first_name} {user.last_name}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td>{user.email}</td>
+                        <td>{user.curp || '-'}</td>
+                        <td>{getRoleBadge(user.role)}</td>
+                        <td>{getStatusBadge(user.is_active)}</td>
+                        <td>{new Date(user.created_at).toLocaleDateString('es-MX')}</td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button className="btn btn-sm btn-secondary"><HiOutlinePencil size={14} /></button>
+                            <button className="btn btn-sm btn-secondary"><HiOutlineTrash size={14} /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Pagination */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginTop: 'var(--spacing-lg)',
-        fontSize: '0.875rem',
-        color: 'var(--gray-500)'
-      }}>
-        <span>Mostrando {filteredUsers.length} de {users.length} usuarios</span>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button className="btn btn-sm btn-secondary">← Anterior</button>
-          <button className="btn btn-sm btn-primary">Siguiente →</button>
+      {!loading && users.length > 0 && (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginTop: 'var(--spacing-lg)',
+          fontSize: '0.875rem',
+          color: 'var(--gray-500)'
+        }}>
+          <span>Mostrando {filteredUsers.length} de {users.length} usuarios</span>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn btn-sm btn-secondary" disabled>← Anterior</button>
+            <button className="btn btn-sm btn-secondary" disabled>Siguiente →</button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
