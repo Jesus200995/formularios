@@ -34,6 +34,8 @@ import {
 } from 'react-icons/hi'
 import './FormBuilder.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+
 const QUESTION_TYPES = [
   { type: 'text', label: 'Texto corto', icon: HiOutlineMenuAlt2, category: 'basic' },
   { type: 'textarea', label: 'Texto largo', icon: HiOutlineDocumentDuplicate, category: 'basic' },
@@ -89,6 +91,10 @@ function FormBuilder({ form, onSave, onCancel }) {
   const [activeCategory, setActiveCategory] = useState('basic')
   const [previewMode, setPreviewMode] = useState(false)
   const [draggedIndex, setDraggedIndex] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+
+  const getAuthToken = () => localStorage.getItem('authToken')
 
   useEffect(() => {
     if (form) {
@@ -199,15 +205,91 @@ function FormBuilder({ form, onSave, onCancel }) {
     setDraggedIndex(null)
   }
 
-  const handleSave = () => {
-    const dataToSave = {
-      ...formData,
-      id: form?.id || Date.now(),
-      created_at: form?.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      submission_count: form?.submission_count || 0
+  const handleSave = async () => {
+    if (!formData.title.trim()) {
+      setError('El título es obligatorio')
+      return
     }
-    onSave(dataToSave)
+
+    const token = getAuthToken()
+    setSaving(true)
+    setError(null)
+
+    // Preparar preguntas para el backend (convertir ids temporales)
+    const questionsForBackend = formData.questions.map((q, index) => ({
+      question_type: q.question_type,
+      label: q.label,
+      description: q.description || '',
+      placeholder: q.placeholder || '',
+      required: q.required || false,
+      order: index,
+      options: q.options || [],
+      validation: q.validation || {},
+      skip_logic: q.skip_logic || {},
+      default_value: q.default_value || null,
+      min_value: q.min_value || null,
+      max_value: q.max_value || null,
+      step: q.step || 1,
+      matrix_rows: q.matrix_rows || [],
+      matrix_columns: q.matrix_columns || [],
+      appearance: q.appearance || {}
+    }))
+
+    const payload = {
+      title: formData.title,
+      description: formData.description || '',
+      status: formData.status,
+      settings: formData.settings,
+      is_public: formData.is_public || false,
+      allow_anonymous: formData.allow_anonymous ?? true,
+      questions: questionsForBackend
+    }
+
+    try {
+      const isEditing = form?.id && typeof form.id === 'number'
+      const url = isEditing ? `${API_URL}/forms/${form.id}` : `${API_URL}/forms`
+      const method = isEditing ? 'PUT' : 'POST'
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      })
+
+      if (response.ok) {
+        const savedForm = await response.json()
+        onSave(savedForm)
+      } else {
+        const errorData = await response.json().catch(() => ({}))
+        setError(errorData.detail || 'Error al guardar el formulario')
+        // Fallback: guardar localmente
+        const localForm = {
+          ...formData,
+          id: form?.id || Date.now(),
+          created_at: form?.created_at || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          submission_count: form?.submission_count || 0
+        }
+        onSave(localForm)
+      }
+    } catch (err) {
+      console.error('Error saving form:', err)
+      setError('Error de conexión. Guardando localmente...')
+      // Fallback: guardar localmente
+      const localForm = {
+        ...formData,
+        id: form?.id || Date.now(),
+        created_at: form?.created_at || new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        submission_count: form?.submission_count || 0
+      }
+      onSave(localForm)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const getQuestionIcon = (type) => {
@@ -258,11 +340,19 @@ function FormBuilder({ form, onSave, onCancel }) {
           <button className="btn btn-secondary" onClick={() => setPreviewMode(!previewMode)}>
             <HiOutlineEye size={18} /> Vista Previa
           </button>
-          <button className="btn btn-primary" onClick={handleSave}>
-            <HiOutlineSave size={18} /> Guardar
+          <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
+            <HiOutlineSave size={18} /> {saving ? 'Guardando...' : 'Guardar'}
           </button>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="error-banner">
+          <span>{error}</span>
+          <button onClick={() => setError(null)}><HiOutlineX size={16} /></button>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="builder-content">

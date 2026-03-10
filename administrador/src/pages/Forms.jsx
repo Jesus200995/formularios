@@ -77,14 +77,33 @@ function Forms() {
   ]
 
   const fetchTemplates = async () => {
-    setTemplates([
-      { id: -1, name: 'Encuesta de Satisfacción', description: 'Evalúa la satisfacción de tus clientes', category: 'feedback', template_data: { questions: [] } },
-      { id: -2, name: 'Registro de Evento', description: 'Inscripción para eventos', category: 'events', template_data: { questions: [] } },
-      { id: -3, name: 'Formulario de Contacto', description: 'Recibe mensajes de visitantes', category: 'contact', template_data: { questions: [] } },
-      { id: -4, name: 'Encuesta de Campo', description: 'Recolección con GPS', category: 'field', template_data: { questions: [] } },
-      { id: -5, name: 'Evaluación de Personal', description: 'Evaluación de desempeño', category: 'hr', template_data: { questions: [] } },
-      { id: -6, name: 'Solicitud de Servicio', description: 'Tickets de soporte', category: 'support', template_data: { questions: [] } }
-    ])
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`${API_URL}/templates`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setTemplates(data)
+      } else {
+        // Fallback a plantillas locales
+        setTemplates([
+          { id: -1, name: 'Encuesta de Satisfacción', description: 'Evalúa la satisfacción de tus clientes', category: 'feedback', template_data: { questions: [] } },
+          { id: -2, name: 'Registro de Evento', description: 'Inscripción para eventos', category: 'events', template_data: { questions: [] } },
+          { id: -3, name: 'Formulario de Contacto', description: 'Recibe mensajes de visitantes', category: 'contact', template_data: { questions: [] } },
+          { id: -4, name: 'Encuesta de Campo', description: 'Recolección con GPS', category: 'field', template_data: { questions: [] } },
+          { id: -5, name: 'Evaluación de Personal', description: 'Evaluación de desempeño', category: 'hr', template_data: { questions: [] } },
+          { id: -6, name: 'Solicitud de Servicio', description: 'Tickets de soporte', category: 'support', template_data: { questions: [] } }
+        ])
+      }
+    } catch (err) {
+      console.error('Error fetching templates:', err)
+      setTemplates([
+        { id: -1, name: 'Encuesta de Satisfacción', description: 'Evalúa la satisfacción de tus clientes', category: 'feedback', template_data: { questions: [] } },
+        { id: -2, name: 'Registro de Evento', description: 'Inscripción para eventos', category: 'events', template_data: { questions: [] } },
+        { id: -3, name: 'Formulario de Contacto', description: 'Recibe mensajes de visitantes', category: 'contact', template_data: { questions: [] } }
+      ])
+    }
   }
 
   useEffect(() => { fetchForms() }, [fetchForms])
@@ -114,21 +133,136 @@ function Forms() {
   const handleCreateNew = () => { setSelectedForm(null); setView('builder') }
   const handleCreateFromTemplate = (template) => {
     setShowTemplates(false)
-    setSelectedForm({ ...template.template_data, id: null, title: template.name, description: template.description, status: 'draft' })
+    setSelectedForm({ 
+      ...template.template_data, 
+      id: null, 
+      title: template.name, 
+      description: template.description, 
+      status: 'draft',
+      questions: template.template_data?.questions || []
+    })
     setView('builder')
   }
-  const handleEdit = (form) => { setSelectedForm(form); setView('builder') }
+  const handleEdit = async (form) => {
+    // Cargar el formulario completo con preguntas desde el backend
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`${API_URL}/forms/${form.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (response.ok) {
+        const fullForm = await response.json()
+        setSelectedForm(fullForm)
+      } else {
+        setSelectedForm(form)
+      }
+    } catch (err) {
+      console.error('Error loading form:', err)
+      setSelectedForm(form)
+    }
+    setView('builder')
+  }
   const handleViewResponses = (form) => { setSelectedForm(form); setView('responses') }
-  const handlePreview = (form) => { setSelectedForm(form); setView('preview') }
+  const handlePreview = async (form) => { 
+    // Cargar el formulario completo con preguntas
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`${API_URL}/forms/${form.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (response.ok) {
+        const fullForm = await response.json()
+        setSelectedForm(fullForm)
+      } else {
+        setSelectedForm(form)
+      }
+    } catch (err) {
+      setSelectedForm(form)
+    }
+    setView('preview') 
+  }
   const handleDelete = async () => {
     if (!formToDelete) return
-    setForms(forms.filter(f => f.id !== formToDelete.id))
+    const token = getAuthToken()
+    try {
+      const response = await fetch(`${API_URL}/forms/${formToDelete.id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (response.ok) {
+        setForms(forms.filter(f => f.id !== formToDelete.id))
+      } else {
+        // Fallback: eliminar localmente
+        setForms(forms.filter(f => f.id !== formToDelete.id))
+      }
+    } catch (err) {
+      console.error('Error deleting form:', err)
+      setForms(forms.filter(f => f.id !== formToDelete.id))
+    }
     setShowDeleteModal(false)
     setFormToDelete(null)
   }
-  const handleDuplicate = (form) => {
-    const newForm = { ...form, id: Date.now(), title: `${form.title} (Copia)`, status: 'draft', submission_count: 0, created_at: new Date().toISOString() }
-    setForms([newForm, ...forms])
+  const handleDuplicate = async (form) => {
+    const token = getAuthToken()
+    try {
+      // Primero obtener el formulario completo
+      const getResponse = await fetch(`${API_URL}/forms/${form.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      
+      if (getResponse.ok) {
+        const fullForm = await getResponse.json()
+        // Crear nuevo formulario con los mismos datos
+        const newFormData = {
+          title: `${fullForm.title} (Copia)`,
+          description: fullForm.description,
+          status: 'draft',
+          settings: fullForm.settings,
+          is_public: false,
+          allow_anonymous: fullForm.allow_anonymous,
+          questions: (fullForm.questions || []).map(q => ({
+            question_type: q.question_type,
+            label: q.label,
+            description: q.description,
+            placeholder: q.placeholder,
+            required: q.required,
+            order: q.order,
+            options: q.options || [],
+            validation: q.validation || {},
+            skip_logic: q.skip_logic || {},
+            default_value: q.default_value,
+            min_value: q.min_value,
+            max_value: q.max_value
+          }))
+        }
+
+        const createResponse = await fetch(`${API_URL}/forms`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(newFormData)
+        })
+
+        if (createResponse.ok) {
+          const newForm = await createResponse.json()
+          setForms([newForm, ...forms])
+        } else {
+          // Fallback local
+          const localCopy = { ...form, id: Date.now(), title: `${form.title} (Copia)`, status: 'draft', submission_count: 0, created_at: new Date().toISOString() }
+          setForms([localCopy, ...forms])
+        }
+      } else {
+        // Fallback local
+        const localCopy = { ...form, id: Date.now(), title: `${form.title} (Copia)`, status: 'draft', submission_count: 0, created_at: new Date().toISOString() }
+        setForms([localCopy, ...forms])
+      }
+    } catch (err) {
+      console.error('Error duplicating form:', err)
+      const localCopy = { ...form, id: Date.now(), title: `${form.title} (Copia)`, status: 'draft', submission_count: 0, created_at: new Date().toISOString() }
+      setForms([localCopy, ...forms])
+    }
   }
   const handleShare = (form) => { setShareForm(form); setShowShareModal(true) }
   const copyShareLink = () => {
