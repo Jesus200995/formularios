@@ -37,6 +37,10 @@ class FormStatus(str, enum.Enum):
     PUBLISHED = "published"
     ARCHIVED = "archived"
 
+class UserRole(str, enum.Enum):
+    USER = "user"
+    ADMIN = "admin"
+
 class User(Base):
     __tablename__ = "users"
     
@@ -47,6 +51,7 @@ class User(Base):
     last_name = Column(String(255))
     full_name = Column(String(255))
     curp = Column(String(18), unique=True, index=True)
+    role = Column(SQLEnum(UserRole), default=UserRole.USER)
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)

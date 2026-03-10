@@ -37,12 +37,17 @@ class FormStatus(str, Enum):
     PUBLISHED = "published"
     ARCHIVED = "archived"
 
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
+
 # User Schemas
 class UserBase(BaseModel):
     email: EmailStr
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     curp: Optional[str] = None
+    role: Optional[UserRole] = UserRole.USER
 
 class UserCreate(UserBase):
     password: str
@@ -58,6 +63,7 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     id: int
     full_name: Optional[str] = None
+    role: UserRole
     is_active: bool
     is_admin: bool
     created_at: datetime

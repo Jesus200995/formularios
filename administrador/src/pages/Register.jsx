@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  HiOutlineMail, 
-  HiOutlineUser, 
-  HiOutlineLockClosed,
-  HiOutlineIdentification,
-  HiOutlineArrowRight,
+  HiOutlineUserAdd,
   HiOutlineCheckCircle,
-  HiOutlineExclamationCircle
+  HiOutlineClock,
+  HiOutlineShieldCheck,
+  HiOutlineUserGroup
 } from 'react-icons/hi'
 import './Register.css'
 
@@ -20,13 +18,13 @@ function Register() {
     last_name: '',
     email: '',
     curp: '',
+    role: 'user',
     password: '',
     password_confirm: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const [focusedField, setFocusedField] = useState(null)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -49,7 +47,7 @@ function Register() {
     setError('')
 
     // Validaciones
-    if (!formData.first_name || !formData.last_name || !formData.email || !formData.curp || !formData.password || !formData.password_confirm) {
+    if (!formData.first_name || !formData.last_name || !formData.email || !formData.curp || !formData.role || !formData.password || !formData.password_confirm) {
       setError('Todos los campos son obligatorios')
       return
     }
@@ -87,6 +85,7 @@ function Register() {
           first_name: formData.first_name,
           last_name: formData.last_name,
           curp: formData.curp.toUpperCase(),
+          role: formData.role,
           password: formData.password,
           password_confirm: formData.password_confirm
         })
@@ -112,13 +111,15 @@ function Register() {
   if (success) {
     return (
       <div className="register-page">
-        <div className="register-container success-animation">
-          <div className="success-icon">
-            <HiOutlineCheckCircle size={64} />
+        <div className="register-wrapper">
+          <div className="success-container">
+            <div className="success-icon">
+              <HiOutlineCheckCircle size={64} />
+            </div>
+            <h2>¡Registro Exitoso!</h2>
+            <p>Tu cuenta ha sido creada correctamente.</p>
+            <p className="redirect-text">Redirigiendo al inicio de sesión...</p>
           </div>
-          <h2>¡Registro Exitoso!</h2>
-          <p>Tu cuenta ha sido creada correctamente.</p>
-          <p className="redirect-text">Redirigiendo al inicio de sesión...</p>
         </div>
       </div>
     )
@@ -126,155 +127,154 @@ function Register() {
 
   return (
     <div className="register-page">
-      <div className="register-container fade-in">
-        <div className="register-header">
-          <div className="logo-circle">
-            <HiOutlineUser size={32} />
+      <div className="register-container">
+        <div className="register-card">
+          <div className="register-header">
+            <div className="register-logo">
+              <span>R</span>
+            </div>
+            <h1>Crear Cuenta</h1>
+            <p>Completa tus datos para registrarte</p>
           </div>
-          <h1>Crear cuenta</h1>
-          <p>Completa tus datos para registrarte</p>
-        </div>
 
-        {error && (
-          <div className="error-message slide-down">
-            <HiOutlineExclamationCircle size={20} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="register-form">
-          <div className="form-row">
-            <div className={`input-group ${focusedField === 'first_name' ? 'focused' : ''} ${formData.first_name ? 'has-value' : ''}`}>
-              <label htmlFor="first_name">Nombre</label>
-              <div className="input-wrapper">
-                <HiOutlineUser className="input-icon" size={20} />
+          <form onSubmit={handleSubmit} className="register-form">
+            {error && (
+              <div className="register-error">
+                {error}
+              </div>
+            )}
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="first_name">Nombre</label>
                 <input
                   type="text"
                   id="first_name"
                   name="first_name"
+                  className="form-control"
+                  placeholder="Ej: Juan"
                   value={formData.first_name}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField('first_name')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder=" "
                   required
                 />
               </div>
-            </div>
 
-            <div className={`input-group ${focusedField === 'last_name' ? 'focused' : ''} ${formData.last_name ? 'has-value' : ''}`}>
-              <label htmlFor="last_name">Apellidos</label>
-              <div className="input-wrapper">
-                <HiOutlineUser className="input-icon" size={20} />
+              <div className="form-group">
+                <label htmlFor="last_name">Apellidos</label>
                 <input
                   type="text"
                   id="last_name"
                   name="last_name"
+                  className="form-control"
+                  placeholder="Ej: Pérez García"
                   value={formData.last_name}
                   onChange={handleChange}
-                  onFocus={() => setFocusedField('last_name')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder=" "
                   required
                 />
               </div>
             </div>
-          </div>
 
-          <div className={`input-group ${focusedField === 'email' ? 'focused' : ''} ${formData.email ? 'has-value' : ''}`}>
-            <label htmlFor="email">Correo electrónico</label>
-            <div className="input-wrapper">
-              <HiOutlineMail className="input-icon" size={20} />
+            <div className="form-group">
+              <label htmlFor="email">Correo electrónico</label>
               <input
                 type="email"
                 id="email"
                 name="email"
+                className="form-control"
+                placeholder="usuario@ejemplo.com"
                 value={formData.email}
                 onChange={handleChange}
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-                placeholder=" "
                 required
               />
             </div>
-          </div>
 
-          <div className={`input-group ${focusedField === 'curp' ? 'focused' : ''} ${formData.curp ? 'has-value' : ''}`}>
-            <label htmlFor="curp">CURP</label>
-            <div className="input-wrapper">
-              <HiOutlineIdentification className="input-icon" size={20} />
+            <div className="form-group">
+              <label htmlFor="curp">CURP</label>
               <input
                 type="text"
                 id="curp"
                 name="curp"
+                className="form-control"
+                placeholder="18 caracteres"
                 value={formData.curp}
                 onChange={(e) => handleChange({ target: { name: 'curp', value: e.target.value.toUpperCase() } })}
-                onFocus={() => setFocusedField('curp')}
-                onBlur={() => setFocusedField(null)}
-                placeholder=" "
                 maxLength={18}
                 required
               />
+              <small className="form-text">18 caracteres en mayúsculas</small>
             </div>
-            <span className="input-hint">18 caracteres</span>
-          </div>
 
-          <div className={`input-group ${focusedField === 'password' ? 'focused' : ''} ${formData.password ? 'has-value' : ''}`}>
-            <label htmlFor="password">Contraseña</label>
-            <div className="input-wrapper">
-              <HiOutlineLockClosed className="input-icon" size={20} />
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
+            <div className="form-group">
+              <label htmlFor="role">Rol</label>
+              <select
+                id="role"
+                name="role"
+                className="form-control"
+                value={formData.role}
                 onChange={handleChange}
-                onFocus={() => setFocusedField('password')}
-                onBlur={() => setFocusedField(null)}
-                placeholder=" "
-                minLength={6}
                 required
-              />
+              >
+                <option value="user">Usuario</option>
+                <option value="admin">Administrador</option>
+              </select>
             </div>
-            <span className="input-hint">Mínimo 6 caracteres</span>
-          </div>
 
-          <div className={`input-group ${focusedField === 'password_confirm' ? 'focused' : ''} ${formData.password_confirm ? 'has-value' : ''}`}>
-            <label htmlFor="password_confirm">Confirmar contraseña</label>
-            <div className="input-wrapper">
-              <HiOutlineLockClosed className="input-icon" size={20} />
-              <input
-                type="password"
-                id="password_confirm"
-                name="password_confirm"
-                value={formData.password_confirm}
-                onChange={handleChange}
-                onFocus={() => setFocusedField('password_confirm')}
-                onBlur={() => setFocusedField(null)}
-                placeholder=" "
-                required
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="password">Contraseña</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="form-control"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  minLength={6}
+                  required
+                />
+                <small className="form-text">Mínimo 6 caracteres</small>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="password_confirm">Confirmar contraseña</label>
+                <input
+                  type="password"
+                  id="password_confirm"
+                  name="password_confirm"
+                  className="form-control"
+                  placeholder="••••••••"
+                  value={formData.password_confirm}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
+
+            <button 
+              type="submit" 
+              className="btn btn-primary btn-lg register-btn"
+              disabled={loading}
+            >
+              {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
+            </button>
+          </form>
+
+          <div className="register-footer">
+            <p>¿Ya tienes cuenta? <button onClick={() => navigate('/login')} className="link-btn">Inicia sesión</button></p>
           </div>
+        </div>
 
-          <button 
-            type="submit" 
-            className="submit-btn" 
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="loading-spinner"></span>
-            ) : (
-              <>
-                <span>Crear cuenta</span>
-                <HiOutlineArrowRight size={20} />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="register-footer">
-          <p>¿Ya tienes cuenta? <button onClick={() => navigate('/login')} className="link-btn">Inicia sesión</button></p>
+        <div className="register-info">
+          <h2>Únete a nuestra plataforma</h2>
+          <p>Crea tu cuenta y comienza a gestionar formularios de manera eficiente.</p>
+          <ul className="register-features">
+            <li><HiOutlineUserGroup size={20} /> Gestión completa de usuarios</li>
+            <li><HiOutlineCheckCircle size={20} /> Registro rápido y seguro</li>
+            <li><HiOutlineClock size={20} /> Acceso inmediato</li>
+            <li><HiOutlineShieldCheck size={20} /> Datos protegidos</li>
+            <li><HiOutlineUserAdd size={20} /> Proceso simple</li>
+          </ul>
         </div>
       </div>
     </div>

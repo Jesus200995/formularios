@@ -109,6 +109,8 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         last_name=user_data.last_name,
         full_name=full_name,
         curp=user_data.curp,
+        role=user_data.role,
+        is_admin=(user_data.role.value == "admin") if user_data.role else False,
         hashed_password=hashed_password
     )
     
