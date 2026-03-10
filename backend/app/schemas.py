@@ -40,18 +40,24 @@ class FormStatus(str, Enum):
 # User Schemas
 class UserBase(BaseModel):
     email: EmailStr
-    full_name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    curp: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
+    password_confirm: str
 
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
-    full_name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    curp: Optional[str] = None
     password: Optional[str] = None
 
 class UserResponse(UserBase):
     id: int
+    full_name: Optional[str] = None
     is_active: bool
     is_admin: bool
     created_at: datetime

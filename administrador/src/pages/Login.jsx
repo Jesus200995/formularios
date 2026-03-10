@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   HiOutlineChartBar, 
   HiOutlineUsers, 
@@ -9,6 +10,7 @@ import {
 import './Login.css'
 
 function Login({ onLogin }) {
+  const navigate = useNavigate()
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
@@ -104,7 +106,8 @@ function Login({ onLogin }) {
           </form>
 
           <div className="login-footer">
-            <p>Panel administrativo de <strong>Mobile App</strong></p>
+            <p>¿No tienes cuenta? <button onClick={() => navigate('/register')} className="link-btn" style={{ background: 'none', border: 'none', color: '#667eea', fontWeight: 600, cursor: 'pointer', padding: 0, fontSize: '14px' }}>Regístrate aquí</button></p>
+            <p style={{ marginTop: '8px', color: '#999' }}>Panel administrativo de <strong>Mobile App</strong></p>
           </div>
         </div>
 

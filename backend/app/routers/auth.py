@@ -71,6 +71,13 @@ async def get_current_user_optional(
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
     """Register a new user"""
+    # Validate passwords match
+    if user_data.password != user_data.password_confirm:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match"
+        )
+    
     # Check if email exists
     result = await db.execute(select(User).where(User.email == user_data.email))
     existing_user = result.scalar_one_or_none()
@@ -81,11 +88,27 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
             detail="Email already registered"
         )
     
+    # Check if CURP exists
+    if user_data.curp:
+        result = await db.execute(select(User).where(User.curp == user_data.curp))
+        existing_curp = result.scalar_one_or_none()
+        
+        if existing_curp:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CURP already registered"
+            )
+    
     # Create user
     hashed_password = get_password_hash(user_data.password)
+    full_name = f"{user_data.first_name or ''} {user_data.last_name or ''}".strip()
+    
     user = User(
         email=user_data.email,
-        full_name=user_data.full_name,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        full_name=full_name,
+        curp=user_data.curp,
         hashed_password=hashed_password
     )
     
