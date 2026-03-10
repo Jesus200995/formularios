@@ -51,7 +51,7 @@ class User(Base):
     last_name = Column(String(255))
     full_name = Column(String(255))
     curp = Column(String(18), unique=True, index=True)
-    role = Column(SQLEnum(UserRole, name='user_role', create_type=False), default=UserRole.USER)
+    role = Column(String(20), default="user")
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
