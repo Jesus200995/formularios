@@ -9,6 +9,8 @@ import {
 } from 'react-icons/hi'
 import './Login.css'
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+
 function Login({ onLogin }) {
   const navigate = useNavigate()
   const [credentials, setCredentials] = useState({
@@ -26,19 +28,55 @@ function Login({ onLogin }) {
     setError('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
     
-    // Simulación de login
-    setTimeout(() => {
-      if (credentials.email && credentials.password) {
-        onLogin()
+    try {
+      // Usar FormData para enviar las credenciales (OAuth2PasswordRequestForm)
+      const formData = new URLSearchParams()
+      formData.append('username', credentials.email)
+      formData.append('password', credentials.password)
+
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        
+        // Guardar token en localStorage
+        localStorage.setItem('token', data.access_token)
+        
+        // Obtener información del usuario
+        const userResponse = await fetch(`${API_URL}/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${data.access_token}`
+          }
+        })
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json()
+          localStorage.setItem('user', JSON.stringify(userData))
+          onLogin()
+        } else {
+          setError('Error al obtener datos del usuario')
+        }
       } else {
-        setError('Por favor complete todos los campos')
+        const errorData = await response.json()
+        setError(errorData.detail || 'Email o contraseña incorrectos')
       }
+    } catch (err) {
+      console.error('Error de login:', err)
+      setError('Error de conexión. Por favor intente nuevamente')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   return (

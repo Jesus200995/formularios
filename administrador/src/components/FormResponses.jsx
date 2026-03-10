@@ -28,7 +28,7 @@ function FormResponses({ form, onBack }) {
   const [showExportModal, setShowExportModal] = useState(false)
   const [dateFilter, setDateFilter] = useState({ from: '', to: '' })
 
-  const getAuthToken = () => localStorage.getItem('authToken')
+  const getAuthToken = () => localStorage.getItem('token')
 
   useEffect(() => {
     fetchSubmissions()

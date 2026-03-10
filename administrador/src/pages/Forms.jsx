@@ -39,7 +39,7 @@ function Forms() {
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareForm, setShareForm] = useState(null)
 
-  const getAuthToken = () => localStorage.getItem('authToken')
+  const getAuthToken = () => localStorage.getItem('token')
 
   const fetchForms = useCallback(async () => {
     const token = getAuthToken()

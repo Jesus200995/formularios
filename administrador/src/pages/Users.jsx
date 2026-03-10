@@ -16,7 +16,7 @@ function Users() {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const token = localStorage.getItem('token') || 'dummy-token'
+      const token = localStorage.getItem('token')
       const response = await fetch(`${API_URL}/users`, {
         headers: {
           'Authorization': `Bearer ${token}`

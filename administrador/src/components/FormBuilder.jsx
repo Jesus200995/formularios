@@ -94,7 +94,7 @@ function FormBuilder({ form, onSave, onCancel }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
-  const getAuthToken = () => localStorage.getItem('authToken')
+  const getAuthToken = () => localStorage.getItem('token')
 
   useEffect(() => {
     if (form) {
