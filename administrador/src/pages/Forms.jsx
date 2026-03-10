@@ -23,7 +23,8 @@ import FormResponses from '../components/FormResponses'
 import FormPreview from '../components/FormPreview'
 import './Forms.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 function Forms() {
   const [activeTab, setActiveTab] = useState('all')

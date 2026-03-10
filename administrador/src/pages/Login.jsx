@@ -9,7 +9,8 @@ import {
 } from 'react-icons/hi'
 import './Login.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 function Login({ onLogin }) {
   const navigate = useNavigate()
@@ -32,8 +33,17 @@ function Login({ onLogin }) {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Validaciones básicas
+    if (!credentials.email || !credentials.password) {
+      setError('Por favor complete todos los campos')
+      setLoading(false)
+      return
+    }
     
     try {
+      console.log('Intentando login en:', `${API_URL}/auth/login`)
+      
       // Usar FormData para enviar las credenciales (OAuth2PasswordRequestForm)
       const formData = new URLSearchParams()
       formData.append('username', credentials.email)
@@ -47,8 +57,11 @@ function Login({ onLogin }) {
         body: formData
       })
 
+      console.log('Login response status:', response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log('Login exitoso, obteniendo datos del usuario...')
         
         // Guardar token en localStorage
         localStorage.setItem('token', data.access_token)
@@ -62,18 +75,30 @@ function Login({ onLogin }) {
 
         if (userResponse.ok) {
           const userData = await userResponse.json()
+          console.log('Usuario autenticado:', userData.email)
           localStorage.setItem('user', JSON.stringify(userData))
           onLogin()
         } else {
+          // Si no se pueden obtener los datos del usuario, limpiar y mostrar error
+          localStorage.removeItem('token')
           setError('Error al obtener datos del usuario')
         }
       } else {
         const errorData = await response.json()
-        setError(errorData.detail || 'Email o contraseña incorrectos')
+        console.log('Error de login:', errorData)
+        
+        // Mostrar mensaje de error específico
+        if (response.status === 401) {
+          setError('Email o contraseña incorrectos')
+        } else if (response.status === 403) {
+          setError('Su cuenta está desactivada')
+        } else {
+          setError(errorData.detail || 'Error al iniciar sesión')
+        }
       }
     } catch (err) {
-      console.error('Error de login:', err)
-      setError('Error de conexión. Por favor intente nuevamente')
+      console.error('Error de conexión:', err)
+      setError('Error de conexión con el servidor. Verifique su conexión a internet.')
     } finally {
       setLoading(false)
     }

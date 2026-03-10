@@ -9,7 +9,8 @@ import {
 } from 'react-icons/hi'
 import './Register.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 function Register() {
   const navigate = useNavigate()
@@ -33,8 +34,8 @@ function Register() {
   }
 
   const validateCURP = (curp) => {
-    const curpRegex = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]\d$/
-    return curpRegex.test(curp.toUpperCase())
+    // Validación simple: solo verificar que tenga 18 caracteres alfanuméricos
+    return curp.length === 18 && /^[A-Z0-9]+$/i.test(curp)
   }
 
   const validateEmail = (email) => {
@@ -47,7 +48,7 @@ function Register() {
     setError('')
 
     // Validaciones
-    if (!formData.first_name || !formData.last_name || !formData.email || !formData.curp || !formData.role || !formData.password || !formData.password_confirm) {
+    if (!formData.first_name || !formData.last_name || !formData.email || !formData.curp || !formData.password || !formData.password_confirm) {
       setError('Todos los campos son obligatorios')
       return
     }
@@ -58,7 +59,7 @@ function Register() {
     }
 
     if (!validateCURP(formData.curp)) {
-      setError('El CURP no es válido. Debe tener 18 caracteres')
+      setError('El CURP debe tener exactamente 18 caracteres')
       return
     }
 
@@ -75,21 +76,32 @@ function Register() {
     setLoading(true)
 
     try {
+      console.log('Enviando registro a:', `${API_URL}/auth/register`)
+      
+      const requestBody = {
+        email: formData.email,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        curp: formData.curp.toUpperCase(),
+        role: formData.role,
+        password: formData.password,
+        password_confirm: formData.password_confirm
+      }
+      
+      console.log('Datos:', requestBody)
+
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          email: formData.email,
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          curp: formData.curp.toUpperCase(),
-          role: formData.role,
-          password: formData.password,
-          password_confirm: formData.password_confirm
-        })
+        body: JSON.stringify(requestBody)
       })
+
+      console.log('Response status:', response.status)
+
+      const data = await response.json()
+      console.log('Response data:', data)
 
       if (response.ok) {
         setSuccess(true)
@@ -97,12 +109,11 @@ function Register() {
           navigate('/login')
         }, 2000)
       } else {
-        const data = await response.json()
         setError(data.detail || 'Error al registrar usuario')
       }
     } catch (err) {
-      console.error('Error:', err)
-      setError('Error de conexión. Intente nuevamente')
+      console.error('Error de registro:', err)
+      setError('Error de conexión con el servidor. Verifique su conexión a internet.')
     } finally {
       setLoading(false)
     }

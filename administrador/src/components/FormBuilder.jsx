@@ -34,7 +34,8 @@ import {
 } from 'react-icons/hi'
 import './FormBuilder.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 const QUESTION_TYPES = [
   { type: 'text', label: 'Texto corto', icon: HiOutlineMenuAlt2, category: 'basic' },

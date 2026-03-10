@@ -16,7 +16,8 @@ import {
 } from 'react-icons/hi'
 import './FormResponses.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 function FormResponses({ form, onBack }) {
   const [submissions, setSubmissions] = useState([])

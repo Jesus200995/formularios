@@ -10,7 +10,8 @@ import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
 import './App.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -23,6 +24,7 @@ function App() {
       
       if (token) {
         try {
+          console.log('Verificando token existente...')
           const response = await fetch(`${API_URL}/auth/me`, {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -31,10 +33,12 @@ function App() {
 
           if (response.ok) {
             const userData = await response.json()
+            console.log('Token válido, usuario:', userData.email)
             localStorage.setItem('user', JSON.stringify(userData))
             setIsAuthenticated(true)
           } else {
             // Token inválido, limpiar
+            console.log('Token inválido, limpiando sesión')
             localStorage.removeItem('token')
             localStorage.removeItem('user')
             setIsAuthenticated(false)
@@ -45,6 +49,8 @@ function App() {
           localStorage.removeItem('user')
           setIsAuthenticated(false)
         }
+      } else {
+        console.log('No hay token guardado')
       }
       
       setLoading(false)

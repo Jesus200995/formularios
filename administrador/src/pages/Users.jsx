@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus } from 'react-icons/hi'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://apidata.geodatos.com.mx/api'
+// Siempre usar la URL del API remoto
+const API_URL = 'https://apidata.geodatos.com.mx/api'
 
 function Users() {
   const [searchTerm, setSearchTerm] = useState('')
