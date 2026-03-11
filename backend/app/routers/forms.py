@@ -192,6 +192,7 @@ async def get_form(
     
     return FormResponse(
         id=form.id,
+        public_code=form.public_code,
         title=form.title,
         description=form.description,
         status=form.status,
@@ -644,6 +645,7 @@ async def get_public_form(
     
     return FormResponse(
         id=form.id,
+        public_code=form.public_code,
         title=form.title,
         description=form.description,
         status=form.status,
