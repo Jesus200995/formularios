@@ -320,11 +320,37 @@ const Register = () => {
                       onChange={handleChange}
                     >
                       <option value="">Selecciona un territorio</option>
-                      <option value="norte">Zona Norte</option>
-                      <option value="sur">Zona Sur</option>
-                      <option value="este">Zona Este</option>
-                      <option value="oeste">Zona Oeste</option>
-                      <option value="centro">Zona Centro</option>
+                      <option value="Acapulco - Centro - Norte - Tierra Caliente">Acapulco - Centro - Norte - Tierra Caliente</option>
+                      <option value="Acayucan">Acayucan</option>
+                      <option value="Balancán">Balancán</option>
+                      <option value="Chihuahua / Sonora">Chihuahua / Sonora</option>
+                      <option value="Colima">Colima</option>
+                      <option value="Comalcalco">Comalcalco</option>
+                      <option value="Córdoba">Córdoba</option>
+                      <option value="Costa Chica - Montaña">Costa Chica - Montaña</option>
+                      <option value="Costa Grande - Sierra">Costa Grande - Sierra</option>
+                      <option value="Durango / Zacatecas">Durango / Zacatecas</option>
+                      <option value="Hidalgo">Hidalgo</option>
+                      <option value="Istmo">Istmo</option>
+                      <option value="Michoacán">Michoacán</option>
+                      <option value="Mixteca">Mixteca</option>
+                      <option value="Morelos">Morelos</option>
+                      <option value="Nayarit / Jalisco">Nayarit / Jalisco</option>
+                      <option value="Ocosingo">Ocosingo</option>
+                      <option value="Palenque">Palenque</option>
+                      <option value="Papantla">Papantla</option>
+                      <option value="Pichucalco">Pichucalco</option>
+                      <option value="Puebla">Puebla</option>
+                      <option value="San Luis Potosí">San Luis Potosí</option>
+                      <option value="Sinaloa">Sinaloa</option>
+                      <option value="Tamaulipas">Tamaulipas</option>
+                      <option value="Tantoyuca">Tantoyuca</option>
+                      <option value="Tapachula">Tapachula</option>
+                      <option value="Teapa">Teapa</option>
+                      <option value="Tlaxcala / Estado de México">Tlaxcala / Estado de México</option>
+                      <option value="Tzucacab / Opb">Tzucacab / Opb</option>
+                      <option value="Xpujil">Xpujil</option>
+                      <option value="Oficinas Centrales">Oficinas Centrales</option>
                     </select>
                   </div>
                 </div>
@@ -343,10 +369,11 @@ const Register = () => {
                       onChange={handleChange}
                     >
                       <option value="">Selecciona un puesto</option>
-                      <option value="operador">Operador</option>
-                      <option value="supervisor">Supervisor</option>
-                      <option value="coordinador">Coordinador</option>
-                      <option value="gerente">Gerente</option>
+                      <option value="TECNICO PRODUCTIVO">TECNICO PRODUCTIVO</option>
+                      <option value="TECNICO SOCIAL">TECNICO SOCIAL</option>
+                      <option value="FACILITADOR COMUNITARIO">FACILITADOR COMUNITARIO</option>
+                      <option value="COORDINACION TERRITORIAL">COORDINACION TERRITORIAL</option>
+                      <option value="ESPECIALISTAS PRODUCTIVOS Y SOCIALES">ESPECIALISTAS PRODUCTIVOS Y SOCIALES</option>
                     </select>
                   </div>
                 </div>
