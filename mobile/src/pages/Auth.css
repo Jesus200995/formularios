@@ -274,9 +274,9 @@
 
 .input-icon {
   position: absolute;
-  left: 14px;
-  width: 18px;
-  height: 18px;
+  left: 12px;
+  width: 20px;
+  height: 20px;
   color: var(--gray-400);
   pointer-events: none;
   transition: color 0.3s ease;
@@ -290,7 +290,7 @@
 .input-wrapper input,
 .input-wrapper select {
   width: 100%;
-  padding: 16px 16px 16px 48px;
+  padding: 16px 16px 16px 56px;
   font-size: 16px;
   border: 2px solid var(--gray-200);
   border-radius: 14px;
@@ -667,15 +667,15 @@
   
   .input-wrapper input,
   .input-wrapper select {
-    padding: 14px 14px 14px 46px;
+    padding: 14px 14px 14px 52px;
     font-size: 16px;
     border-radius: 12px;
   }
   
   .input-icon {
     left: 12px;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
   
   .auth-button {
@@ -713,14 +713,14 @@
   
   .input-wrapper input,
   .input-wrapper select {
-    padding: 12px 12px 12px 44px;
+    padding: 12px 12px 12px 50px;
     font-size: 15px;
   }
   
   .input-icon {
     left: 12px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 }
 
