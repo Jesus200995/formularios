@@ -202,17 +202,57 @@ async def update_form(
         raise HTTPException(status_code=404, detail="Form not found")
     
     # Update fields
-    update_data = form_data.model_dump(exclude_unset=True)
+    update_data = form_data.model_dump(exclude_unset=True, exclude={'questions'})
     if "settings" in update_data and update_data["settings"]:
         update_data["settings"] = update_data["settings"].model_dump() if hasattr(update_data["settings"], "model_dump") else update_data["settings"]
     
     for field, value in update_data.items():
         setattr(form, field, value)
     
+    # Update questions if provided
+    if form_data.questions is not None:
+        # Delete existing questions
+        await db.execute(
+            delete(Question).where(Question.form_id == form_id)
+        )
+        await db.flush()
+        
+        # Create new questions
+        for i, q_data in enumerate(form_data.questions):
+            question = Question(
+                form_id=form.id,
+                question_type=q_data.question_type,
+                label=q_data.label,
+                description=q_data.description,
+                placeholder=q_data.placeholder,
+                required=q_data.required,
+                order=q_data.order if q_data.order is not None else i,
+                options=[opt.model_dump() for opt in q_data.options],
+                validation=q_data.validation.model_dump() if q_data.validation else {},
+                skip_logic=q_data.skip_logic.model_dump() if q_data.skip_logic else {},
+                default_value=q_data.default_value,
+                calculation=q_data.calculation,
+                min_value=q_data.min_value,
+                max_value=q_data.max_value,
+                step=q_data.step,
+                matrix_rows=q_data.matrix_rows,
+                matrix_columns=q_data.matrix_columns,
+                appearance=q_data.appearance
+            )
+            db.add(question)
+    
     form.updated_at = datetime.utcnow()
     
     await db.commit()
     await db.refresh(form)
+    
+    # Reload with questions
+    result = await db.execute(
+        select(Form)
+        .options(selectinload(Form.questions))
+        .where(Form.id == form_id)
+    )
+    form = result.scalar_one()
     
     count_result = await db.execute(
         select(func.count(Submission.id)).where(Submission.form_id == form.id)

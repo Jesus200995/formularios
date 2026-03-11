@@ -246,10 +246,19 @@ function FormBuilder({ form, onSave, onCancel }) {
       questions: questionsForBackend
     }
 
+    console.log('Guardando formulario:', { 
+      isEditing: form?.id && typeof form.id === 'number',
+      formId: form?.id,
+      questionCount: questionsForBackend.length,
+      payload
+    })
+
     try {
       const isEditing = form?.id && typeof form.id === 'number'
       const url = isEditing ? `${API_URL}/forms/${form.id}` : `${API_URL}/forms`
       const method = isEditing ? 'PUT' : 'POST'
+
+      console.log(`Enviando ${method} a ${url}`)
 
       const response = await fetch(url, {
         method,
@@ -260,34 +269,20 @@ function FormBuilder({ form, onSave, onCancel }) {
         body: JSON.stringify(payload)
       })
 
+      console.log('Respuesta del servidor:', response.status, response.statusText)
+
       if (response.ok) {
         const savedForm = await response.json()
+        console.log('Formulario guardado exitosamente:', savedForm)
         onSave(savedForm)
       } else {
         const errorData = await response.json().catch(() => ({}))
-        setError(errorData.detail || 'Error al guardar el formulario')
-        // Fallback: guardar localmente
-        const localForm = {
-          ...formData,
-          id: form?.id || Date.now(),
-          created_at: form?.created_at || new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          submission_count: form?.submission_count || 0
-        }
-        onSave(localForm)
+        console.error('Error del servidor:', errorData)
+        setError(errorData.detail || `Error al guardar el formulario (${response.status})`)
       }
     } catch (err) {
       console.error('Error saving form:', err)
-      setError('Error de conexión. Guardando localmente...')
-      // Fallback: guardar localmente
-      const localForm = {
-        ...formData,
-        id: form?.id || Date.now(),
-        created_at: form?.created_at || new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        submission_count: form?.submission_count || 0
-      }
-      onSave(localForm)
+      setError('Error de conexión. Verifica tu conexión a internet.')
     } finally {
       setSaving(false)
     }

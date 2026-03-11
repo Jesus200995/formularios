@@ -208,6 +208,7 @@ class FormUpdate(BaseModel):
     submission_limit: Optional[int] = None
     start_date: Optional[datetime] = None
     end_date: Optional[datetime] = None
+    questions: Optional[List[QuestionCreate]] = None
 
 class FormResponse(FormBase):
     id: int
