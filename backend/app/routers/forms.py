@@ -25,8 +25,12 @@ async def list_forms(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """List all forms for current user"""
-    query = select(Form).where(Form.owner_id == current_user.id)
+    """List all forms for current user (admins see all forms)"""
+    # Admins can see all forms, regular users only see their own
+    if current_user.role == "admin":
+        query = select(Form)
+    else:
+        query = select(Form).where(Form.owner_id == current_user.id)
     
     if status:
         query = query.where(Form.status == status)
@@ -155,9 +159,12 @@ async def get_form(
     if not form:
         raise HTTPException(status_code=404, detail="Form not found")
     
-    # Check access
-    if not form.is_public and (not current_user or form.owner_id != current_user.id):
-        raise HTTPException(status_code=403, detail="Access denied")
+    # Check access: allow if public, owner, or admin
+    if not form.is_public:
+        if not current_user:
+            raise HTTPException(status_code=403, detail="Access denied")
+        if form.owner_id != current_user.id and current_user.role != "admin":
+            raise HTTPException(status_code=403, detail="Access denied")
     
     # Get submission count
     count_result = await db.execute(
@@ -191,11 +198,15 @@ async def update_form(
     current_user: User = Depends(get_current_user)
 ):
     """Update a form"""
-    result = await db.execute(
-        select(Form)
-        .options(selectinload(Form.questions))
-        .where(and_(Form.id == form_id, Form.owner_id == current_user.id))
-    )
+    # Build query based on user role
+    if current_user.role == "admin":
+        query = select(Form).options(selectinload(Form.questions)).where(Form.id == form_id)
+    else:
+        query = select(Form).options(selectinload(Form.questions)).where(
+            and_(Form.id == form_id, Form.owner_id == current_user.id)
+        )
+    
+    result = await db.execute(query)
     form = result.scalar_one_or_none()
     
     if not form:
@@ -284,9 +295,13 @@ async def delete_form(
     current_user: User = Depends(get_current_user)
 ):
     """Delete a form"""
-    result = await db.execute(
-        select(Form).where(and_(Form.id == form_id, Form.owner_id == current_user.id))
-    )
+    # Build query based on user role
+    if current_user.role == "admin":
+        query = select(Form).where(Form.id == form_id)
+    else:
+        query = select(Form).where(and_(Form.id == form_id, Form.owner_id == current_user.id))
+    
+    result = await db.execute(query)
     form = result.scalar_one_or_none()
     
     if not form:
@@ -362,9 +377,13 @@ async def get_form_statistics(
     current_user: User = Depends(get_current_user)
 ):
     """Get form statistics"""
-    result = await db.execute(
-        select(Form).where(and_(Form.id == form_id, Form.owner_id == current_user.id))
-    )
+    # Build query based on user role
+    if current_user.role == "admin":
+        query = select(Form).where(Form.id == form_id)
+    else:
+        query = select(Form).where(and_(Form.id == form_id, Form.owner_id == current_user.id))
+    
+    result = await db.execute(query)
     form = result.scalar_one_or_none()
     
     if not form:

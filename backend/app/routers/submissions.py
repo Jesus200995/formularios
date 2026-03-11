@@ -127,10 +127,13 @@ async def list_submissions(
     current_user: User = Depends(get_current_user)
 ):
     """List submissions for a form"""
-    # Check form ownership
-    result = await db.execute(
-        select(Form).where(and_(Form.id == form_id, Form.owner_id == current_user.id))
-    )
+    # Check form ownership (admins can see all)
+    if current_user.role == "admin":
+        query_form = select(Form).where(Form.id == form_id)
+    else:
+        query_form = select(Form).where(and_(Form.id == form_id, Form.owner_id == current_user.id))
+    
+    result = await db.execute(query_form)
     form = result.scalar_one_or_none()
     
     if not form:
@@ -161,12 +164,15 @@ async def get_submission(
     current_user: User = Depends(get_current_user)
 ):
     """Get a specific submission"""
-    result = await db.execute(
-        select(Submission)
-        .options(selectinload(Submission.answers))
-        .join(Form)
-        .where(and_(Submission.id == submission_id, Form.owner_id == current_user.id))
-    )
+    # Build query based on user role
+    if current_user.role == "admin":
+        query = select(Submission).options(selectinload(Submission.answers)).where(Submission.id == submission_id)
+    else:
+        query = select(Submission).options(selectinload(Submission.answers)).join(Form).where(
+            and_(Submission.id == submission_id, Form.owner_id == current_user.id)
+        )
+    
+    result = await db.execute(query)
     submission = result.scalar_one_or_none()
     
     if not submission:
@@ -181,11 +187,15 @@ async def delete_submission(
     current_user: User = Depends(get_current_user)
 ):
     """Delete a submission"""
-    result = await db.execute(
-        select(Submission)
-        .join(Form)
-        .where(and_(Submission.id == submission_id, Form.owner_id == current_user.id))
-    )
+    # Build query based on user role
+    if current_user.role == "admin":
+        query = select(Submission).where(Submission.id == submission_id)
+    else:
+        query = select(Submission).join(Form).where(
+            and_(Submission.id == submission_id, Form.owner_id == current_user.id)
+        )
+    
+    result = await db.execute(query)
     submission = result.scalar_one_or_none()
     
     if not submission:
@@ -202,12 +212,15 @@ async def export_submissions(
     current_user: User = Depends(get_current_user)
 ):
     """Export submissions to various formats"""
-    # Check form ownership
-    result = await db.execute(
-        select(Form)
-        .options(selectinload(Form.questions))
-        .where(and_(Form.id == form_id, Form.owner_id == current_user.id))
-    )
+    # Check form ownership (admins can export all)
+    if current_user.role == "admin":
+        query_form = select(Form).options(selectinload(Form.questions)).where(Form.id == form_id)
+    else:
+        query_form = select(Form).options(selectinload(Form.questions)).where(
+            and_(Form.id == form_id, Form.owner_id == current_user.id)
+        )
+    
+    result = await db.execute(query_form)
     form = result.scalar_one_or_none()
     
     if not form:
