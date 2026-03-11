@@ -4,6 +4,8 @@ from sqlalchemy import select, func, and_, delete
 from sqlalchemy.orm import selectinload
 from typing import List, Optional
 from datetime import datetime
+import secrets
+import string
 
 from ..database import get_db
 from ..models import Form, Question, Submission, User, FormStatus as FormStatusModel
@@ -15,6 +17,11 @@ from ..schemas import (
 from .auth import get_current_user, get_current_user_optional
 
 router = APIRouter(prefix="/forms", tags=["Forms"])
+
+def generate_public_code(length: int = 8) -> str:
+    """Generate a unique alphanumeric code for public forms"""
+    chars = string.ascii_lowercase + string.digits
+    return ''.join(secrets.choice(chars) for _ in range(length))
 
 @router.get("", response_model=List[FormListResponse])
 async def list_forms(
@@ -72,8 +79,19 @@ async def create_form(
     current_user: User = Depends(get_current_user)
 ):
     """Create a new form"""
+    # Generate unique public code
+    while True:
+        public_code = generate_public_code()
+        # Check if code already exists
+        existing = await db.execute(
+            select(Form).where(Form.public_code == public_code)
+        )
+        if not existing.scalar_one_or_none():
+            break
+    
     # Create form
     form = Form(
+        public_code=public_code,
         title=form_data.title,
         description=form_data.description,
         status=form_data.status,
@@ -584,17 +602,25 @@ async def reorder_questions(
     return {"message": "Questions reordered successfully"}
 
 # Public form access
-@router.get("/public/{form_id}", response_model=FormResponse)
+@router.get("/public/{form_identifier}", response_model=FormResponse)
 async def get_public_form(
-    form_id: int,
+    form_identifier: str,
     db: AsyncSession = Depends(get_db)
 ):
-    """Get a public form for filling"""
-    result = await db.execute(
-        select(Form)
-        .options(selectinload(Form.questions))
-        .where(and_(Form.id == form_id, Form.is_public == True, Form.status == FormStatusModel.PUBLISHED))
-    )
+    """Get a public form for filling (by ID or public_code)"""
+    # Check if identifier is numeric (ID) or alphanumeric (code)
+    if form_identifier.isdigit():
+        # Search by ID (backward compatibility)
+        query = select(Form).options(selectinload(Form.questions)).where(
+            and_(Form.id == int(form_identifier), Form.is_public == True, Form.status == FormStatusModel.PUBLISHED)
+        )
+    else:
+        # Search by public_code
+        query = select(Form).options(selectinload(Form.questions)).where(
+            and_(Form.public_code == form_identifier, Form.is_public == True, Form.status == FormStatusModel.PUBLISHED)
+        )
+    
+    result = await db.execute(query)
     form = result.scalar_one_or_none()
     
     if not form:

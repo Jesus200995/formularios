@@ -64,6 +64,7 @@ class Form(Base):
     __tablename__ = "forms"
     
     id = Column(Integer, primary_key=True, index=True)
+    public_code = Column(String(20), unique=True, index=True, nullable=True)
     title = Column(String(255), nullable=False)
     description = Column(Text)
     status = Column(SQLEnum(FormStatus), default=FormStatus.DRAFT)

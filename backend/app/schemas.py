@@ -212,6 +212,7 @@ class FormUpdate(BaseModel):
 
 class FormResponse(FormBase):
     id: int
+    public_code: Optional[str] = None
     owner_id: Optional[int]
     created_at: datetime
     updated_at: datetime
@@ -223,6 +224,7 @@ class FormResponse(FormBase):
 
 class FormListResponse(BaseModel):
     id: int
+    public_code: Optional[str] = None
     title: str
     description: Optional[str]
     status: FormStatus

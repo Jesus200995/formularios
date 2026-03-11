@@ -267,7 +267,8 @@ function Forms() {
   }
   const handleShare = (form) => { setShareForm(form); setShowShareModal(true) }
   const copyShareLink = () => {
-    navigator.clipboard.writeText(`https://data.geodatos.com.mx/form/${shareForm?.id}`)
+    const code = shareForm?.public_code || shareForm?.id
+    navigator.clipboard.writeText(`https://data.geodatos.com.mx/form/${code}`)
     alert('Enlace copiado al portapapeles')
   }
   const handleFormSaved = (savedForm) => {
@@ -424,7 +425,7 @@ function Forms() {
             <div className="modal-body">
               <p>Comparte este enlace:</p>
               <div className="share-link-box">
-                <input type="text" value={`https://data.geodatos.com.mx/form/${shareForm?.id}`} readOnly />
+                <input type="text" value={`https://data.geodatos.com.mx/form/${shareForm?.public_code || shareForm?.id}`} readOnly />
                 <button className="btn btn-primary" onClick={copyShareLink}><HiOutlineLink size={18} /> Copiar</button>
               </div>
             </div>
