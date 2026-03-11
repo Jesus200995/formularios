@@ -59,7 +59,7 @@ function Users() {
   return (
     <div className="users-page fade-in">
       <div className="page-header">
-        <h1>Gestión de Usuarios</h1>
+        <h1>Usuarios Administrativos</h1>
         <p>Administra los usuarios de la aplicación móvil</p>
       </div>
 

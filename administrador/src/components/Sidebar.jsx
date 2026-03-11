@@ -33,7 +33,7 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
 
   const menuItems = [
     { path: '/', icon: <HiOutlineChartBar size={28} />, label: 'Dashboard' },
-    { path: '/users', icon: <HiOutlineUsers size={28} />, label: 'Usuarios' },
+    { path: '/users', icon: <HiOutlineUsers size={28} />, label: 'Usuarios Administrativos' },
     { path: '/forms', icon: <HiOutlineClipboardList size={28} />, label: 'Formularios' },
     { path: '/analytics', icon: <HiOutlineChartPie size={28} />, label: 'Analíticas' },
     { path: '/settings', icon: <HiOutlineCog size={28} />, label: 'Configuración' }
