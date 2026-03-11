@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { 
   HiOutlineMenu, 
   HiOutlineSearch, 
@@ -10,6 +11,23 @@ import {
 import './Header.css'
 
 function Header({ onToggleSidebar, onToggleMobileSidebar, onLogout }) {
+  const [userData, setUserData] = useState({ 
+    full_name: 'Usuario', 
+    first_name: 'Usuario',
+    role: 'user' 
+  })
+
+  useEffect(() => {
+    const user = localStorage.getItem('user')
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user)
+        setUserData(parsedUser)
+      } catch (error) {
+        console.error('Error al parsear usuario:', error)
+      }
+    }
+  }, [])
   return (
     <header className="header">
       <div className="header-left">
@@ -34,7 +52,7 @@ function Header({ onToggleSidebar, onToggleMobileSidebar, onLogout }) {
         <div className="header-dropdown">
           <button className="header-btn user-btn">
             <span className="user-avatar-small"><HiOutlineUser size={16} /></span>
-            <span className="user-name-header">Admin</span>
+            <span className="user-name-header">{userData.full_name || userData.first_name || 'Usuario'}</span>
             <span className="dropdown-arrow"><HiOutlineChevronDown size={14} /></span>
           </button>
           <div className="dropdown-menu">

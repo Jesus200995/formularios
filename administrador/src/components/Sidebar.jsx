@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { 
   HiOutlineChartBar, 
   HiOutlineUsers, 
@@ -11,6 +12,23 @@ import './Sidebar.css'
 
 function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
   const location = useLocation()
+  const [userData, setUserData] = useState({ 
+    full_name: 'Usuario', 
+    first_name: 'Usuario',
+    role: 'user' 
+  })
+
+  useEffect(() => {
+    const user = localStorage.getItem('user')
+    if (user) {
+      try {
+        const parsedUser = JSON.parse(user)
+        setUserData(parsedUser)
+      } catch (error) {
+        console.error('Error al parsear usuario:', error)
+      }
+    }
+  }, [])
 
   const menuItems = [
     { path: '/', icon: <HiOutlineChartBar size={20} />, label: 'Dashboard' },
@@ -51,8 +69,8 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
           <div className="user-avatar"><HiOutlineUser size={18} /></div>
           {!collapsed && (
             <div className="user-info">
-              <span className="user-name">Admin</span>
-              <span className="user-role">Administrador</span>
+              <span className="user-name">{userData.full_name || userData.first_name || 'Usuario'}</span>
+              <span className="user-role">{userData.role === 'admin' ? 'Administrador' : 'Usuario'}</span>
             </div>
           )}
         </div>
