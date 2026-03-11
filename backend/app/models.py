@@ -203,3 +203,22 @@ class FormTemplate(Base):
     is_public = Column(Boolean, default=True)
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AppUser(Base):
+    """Usuarios de la aplicación móvil"""
+    __tablename__ = "app_users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String(100), nullable=False)
+    apellidos = Column(String(150), nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    curp = Column(String(18), unique=True, index=True, nullable=False)
+    territorio = Column(String(100), nullable=False)
+    puesto_trabajo = Column(String(100), nullable=False)
+    supervisor = Column(String(200), nullable=True)
+    telefono = Column(String(20), nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

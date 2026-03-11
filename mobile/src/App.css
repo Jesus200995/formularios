@@ -4,6 +4,28 @@
   flex-direction: column;
 }
 
+/* App Loading */
+.app-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fdf2f4 0%, #ffffff 50%, #fdf2f4 100%);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(128, 0, 32, 0.1);
+  border-top-color: #800020;
+  border-radius: 50%;
+  animation: loadingSpin 0.8s linear infinite;
+}
+
+@keyframes loadingSpin {
+  to { transform: rotate(360deg); }
+}
+
 .main-content {
   flex: 1;
   padding-top: 60px;

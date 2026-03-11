@@ -6,7 +6,7 @@ import os
 
 from .config import settings
 from .database import init_db
-from .routers import auth, forms, submissions, uploads, templates, users
+from .routers import auth, auth_app, forms, submissions, uploads, templates, users
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -69,6 +69,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api")
+app.include_router(auth_app.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(forms.router, prefix="/api")
 app.include_router(submissions.router, prefix="/api")

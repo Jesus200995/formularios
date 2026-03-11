@@ -312,3 +312,56 @@ class ExportRequest(BaseModel):
     include_metadata: bool = True
     date_from: Optional[datetime] = None
     date_to: Optional[datetime] = None
+
+
+# =====================================================
+# App User Schemas (Mobile App Users)
+# =====================================================
+
+class AppUserBase(BaseModel):
+    nombre: str = Field(..., min_length=2, max_length=100)
+    apellidos: str = Field(..., min_length=2, max_length=150)
+    email: EmailStr
+    curp: str = Field(..., min_length=18, max_length=18)
+    territorio: str
+    puesto_trabajo: str
+    supervisor: Optional[str] = None
+    telefono: str = Field(..., min_length=10, max_length=20)
+
+class AppUserCreate(AppUserBase):
+    password: str = Field(..., min_length=6)
+    password_confirm: str = Field(..., min_length=6)
+
+class AppUserUpdate(BaseModel):
+    nombre: Optional[str] = None
+    apellidos: Optional[str] = None
+    email: Optional[EmailStr] = None
+    territorio: Optional[str] = None
+    puesto_trabajo: Optional[str] = None
+    supervisor: Optional[str] = None
+    telefono: Optional[str] = None
+
+class AppUserResponse(BaseModel):
+    id: int
+    nombre: str
+    apellidos: str
+    email: str
+    curp: str
+    territorio: str
+    puesto_trabajo: str
+    supervisor: Optional[str] = None
+    telefono: str
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class AppUserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class AppUserToken(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: AppUserResponse
