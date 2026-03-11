@@ -60,6 +60,7 @@ async def list_forms(
         
         form_dict = {
             "id": form.id,
+            "public_code": form.public_code,
             "title": form.title,
             "description": form.description,
             "status": form.status,
@@ -144,6 +145,7 @@ async def create_form(
     
     return FormResponse(
         id=form.id,
+        public_code=form.public_code,
         title=form.title,
         description=form.description,
         status=form.status,
@@ -291,6 +293,7 @@ async def update_form(
     
     return FormResponse(
         id=form.id,
+        public_code=form.public_code,
         title=form.title,
         description=form.description,
         status=form.status,
