@@ -102,6 +102,8 @@ function FormBuilder({ form, onSave, onCancel }) {
       setFormData({
         ...form,
         questions: form.questions || [],
+        is_public: form.is_public ?? false,
+        allow_anonymous: form.allow_anonymous ?? true,
         settings: form.settings || {
           theme: 'default',
           show_progress: true,
@@ -564,6 +566,34 @@ function FormBuilder({ form, onSave, onCancel }) {
                     })}
                     rows={3}
                   />
+                </div>
+                <hr style={{ margin: '1.5rem 0', border: 'none', borderTop: '1px solid var(--gray-200)' }} />
+                <h4 style={{ marginBottom: '1rem', fontSize: '0.95rem', fontWeight: 600 }}>Configuración de Acceso</h4>
+                <div className="form-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_public ?? false}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        is_public: e.target.checked
+                      })}
+                    />
+                    <span>Formulario público (visible sin autenticación)</span>
+                  </label>
+                </div>
+                <div className="form-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={formData.allow_anonymous ?? true}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        allow_anonymous: e.target.checked
+                      })}
+                    />
+                    <span>Permitir respuestas anónimas</span>
+                  </label>
                 </div>
               </div>
             </div>

@@ -78,10 +78,27 @@ function PublicForm() {
       setSubmitting(true)
 
       // Format answers for submission
-      const formattedAnswers = Object.entries(answers).map(([questionId, value]) => ({
-        question_id: parseInt(questionId),
-        value: typeof value === 'object' ? JSON.stringify(value) : String(value)
-      }))
+      const formattedAnswers = Object.entries(answers)
+        .filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+        .map(([questionId, value]) => {
+          const answer = {
+            question_id: parseInt(questionId),
+            repeat_index: 0
+          }
+
+          // Determine the appropriate value field based on type
+          if (typeof value === 'number') {
+            answer.value_number = value
+          } else if (Array.isArray(value)) {
+            answer.value_json = value
+          } else if (typeof value === 'object' && value !== null) {
+            answer.value_json = value
+          } else {
+            answer.value_text = String(value)
+          }
+
+          return answer
+        })
 
       const response = await fetch(`${API_URL}/submissions/forms/${formId}`, {
         method: 'POST',
@@ -137,14 +154,35 @@ function PublicForm() {
         )
       
       case 'number':
+      case 'integer':
+      case 'decimal':
         return (
           <input
             type="number"
             placeholder="0"
+            step={question.question_type === 'integer' ? '1' : 'any'}
             value={value}
-            onChange={(e) => handleAnswer(question.id, e.target.value)}
+            onChange={(e) => handleAnswer(question.id, parseFloat(e.target.value) || '')}
             required={question.required}
           />
+        )
+      
+      case 'range':
+        const rangeMin = (question.validation && question.validation.min) || 0
+        const rangeMax = (question.validation && question.validation.max) || 100
+        const rangeStep = question.step || 1
+        return (
+          <div className="range-input">
+            <input
+              type="range"
+              min={rangeMin}
+              max={rangeMax}
+              step={rangeStep}
+              value={value || rangeMin}
+              onChange={(e) => handleAnswer(question.id, parseFloat(e.target.value))}
+            />
+            <span className="range-value">{value || rangeMin}</span>
+          </div>
         )
       
       case 'email':
@@ -169,7 +207,19 @@ function PublicForm() {
           />
         )
       
+      case 'url':
+        return (
+          <input
+            type="url"
+            placeholder="https://ejemplo.com"
+            value={value}
+            onChange={(e) => handleAnswer(question.id, e.target.value)}
+            required={question.required}
+          />
+        )
+      
       case 'select':
+      case 'select_one':
         return (
           <select
             value={value}
@@ -204,13 +254,14 @@ function PublicForm() {
         )
       
       case 'checkbox':
+      case 'select_multiple':
         return (
           <div className="checkbox-group">
             {(question.options || []).map((opt, i) => (
               <label key={i} className="checkbox-option">
                 <input
                   type="checkbox"
-                  checked={(value || []).includes(opt.value)}
+                  checked={(Array.isArray(value) ? value : []).includes(opt.value)}
                   onChange={(e) => {
                     const current = Array.isArray(value) ? value : []
                     if (e.target.checked) {
@@ -281,24 +332,24 @@ function PublicForm() {
         )
       
       case 'scale':
-        const min = (question.validation && question.validation.min) || 1
-        const max = (question.validation && question.validation.max) || 10
+        const scaleMin = (question.validation && question.validation.min) || 1
+        const scaleMax = (question.validation && question.validation.max) || 10
         return (
           <div className="scale-input">
-            <span>{min}</span>
+            <span>{scaleMin}</span>
             <div className="scale-options">
-              {[...Array(max - min + 1)].map((_, i) => (
+              {[...Array(scaleMax - scaleMin + 1)].map((_, i) => (
                 <button
                   key={i}
                   type="button"
-                  className={`scale-option ${value === min + i ? 'active' : ''}`}
-                  onClick={() => handleAnswer(question.id, min + i)}
+                  className={`scale-option ${value === scaleMin + i ? 'active' : ''}`}
+                  onClick={() => handleAnswer(question.id, scaleMin + i)}
                 >
-                  {min + i}
+                  {scaleMin + i}
                 </button>
               ))}
             </div>
-            <span>{max}</span>
+            <span>{scaleMax}</span>
           </div>
         )
       
@@ -308,6 +359,74 @@ function PublicForm() {
             <p>{question.description}</p>
           </div>
         )
+      
+      case 'image':
+      case 'file':
+        return (
+          <div className="file-input">
+            <HiOutlinePhotograph size={32} />
+            <input
+              type="file"
+              accept={question.question_type === 'image' ? 'image/*' : '*/*'}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  handleAnswer(question.id, file.name)
+                }
+              }}
+            />
+          </div>
+        )
+      
+      case 'geopoint':
+        return (
+          <div className="gps-input">
+            <HiOutlineLocationMarker size={32} />
+            <p>Capturar ubicación GPS</p>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                      const location = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                      }
+                      handleAnswer(question.id, location)
+                      alert(`Ubicación capturada: ${location.latitude}, ${location.longitude}`)
+                    },
+                    (error) => {
+                      alert('Error al obtener ubicación: ' + error.message)
+                    }
+                  )
+                } else {
+                  alert('Geolocalización no disponible en este navegador')
+                }
+              }}
+            >
+              {value ? `Lat: ${value.latitude?.toFixed(6)}, Lon: ${value.longitude?.toFixed(6)}` : 'Capturar GPS'}
+            </button>
+          </div>
+        )
+      
+      case 'barcode':
+        return (
+          <div className="barcode-input">
+            <input
+              type="text"
+              placeholder="Escanea o ingresa el código"
+              value={value}
+              onChange={(e) => handleAnswer(question.id, e.target.value)}
+              required={question.required}
+            />
+          </div>
+        )
+      
+      case 'hidden':
+        return null
       
       default:
         return (
