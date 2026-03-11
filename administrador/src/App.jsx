@@ -8,6 +8,7 @@ import Users from './pages/Users'
 import Forms from './pages/Forms'
 import Analytics from './pages/Analytics'
 import Settings from './pages/Settings'
+import PublicForm from './pages/PublicForm'
 import './App.css'
 
 // Siempre usar la URL del API remoto
@@ -90,24 +91,38 @@ function App() {
 
   return (
     <Router>
-      {!isAuthenticated ? (
-        <Routes>
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      ) : (
-        <Layout onLogout={handleLogout}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/forms" element={<Forms />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Layout>
-      )}
+      <Routes>
+        {/* Rutas públicas */}
+        <Route path="/form/:formId" element={<PublicForm />} />
+        
+        {!isAuthenticated ? (
+          <>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/register" element={<Navigate to="/" replace />} />
+            <Route
+              path="/*"
+              element={
+                <Layout onLogout={handleLogout}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/forms" element={<Forms />} />
+                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Layout>
+              }
+            />
+          </>
+        )}
+      </Routes>
     </Router>
   )
 }
