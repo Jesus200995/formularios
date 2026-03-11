@@ -42,8 +42,15 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
         <div className="sidebar-brand">
-          <span className="brand-icon">A</span>
-          {!collapsed && <span className="brand-text">Admin Panel</span>}
+          <div className="brand-icon-circle">
+            <HiOutlineDocumentText size={20} />
+          </div>
+          {!collapsed && (
+            <div className="brand-text-container">
+              <span className="brand-title">DATA</span>
+              <span className="brand-subtitle">Formularios</span>
+            </div>
+          )}
         </div>
       </div>
       
