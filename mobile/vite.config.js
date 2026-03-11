@@ -8,11 +8,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'prompt',
       injectRegister: 'auto',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['images/logo.png'],
       manifest: {
-        name: 'Mobile App',
-        short_name: 'MobileApp',
-        description: 'Aplicación móvil PWA moderna',
+        name: 'DATA Formularios',
+        short_name: 'DATA',
+        description: 'Aplicación móvil de formularios DATA',
         theme_color: '#800020',
         background_color: '#ffffff',
         display: 'standalone',
@@ -21,20 +21,31 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'images/logo.png',
+            sizes: '64x64 32x32 24x24 16x16',
+            type: 'image/png'
+          },
+          {
+            src: 'images/logo.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'images/logo.png',
             sizes: '512x512',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'images/logo.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: 'images/logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
