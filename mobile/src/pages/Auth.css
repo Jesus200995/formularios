@@ -280,6 +280,7 @@
   color: var(--gray-400);
   pointer-events: none;
   transition: color 0.3s ease;
+  flex-shrink: 0;
 }
 
 .input-wrapper:focus-within .input-icon {
@@ -289,7 +290,7 @@
 .input-wrapper input,
 .input-wrapper select {
   width: 100%;
-  padding: 14px 14px 14px 46px;
+  padding: 14px 16px 14px 52px;
   font-size: 16px;
   border: 2px solid var(--gray-200);
   border-radius: 14px;
@@ -666,7 +667,7 @@
   
   .input-wrapper input,
   .input-wrapper select {
-    padding: 12px 12px 12px 42px;
+    padding: 12px 14px 12px 48px;
     font-size: 16px;
     border-radius: 12px;
   }
@@ -712,8 +713,12 @@
   
   .input-wrapper input,
   .input-wrapper select {
-    padding: 11px 11px 11px 40px;
+    padding: 11px 12px 11px 46px;
     font-size: 15px;
+  }
+  
+  .input-icon {
+    left: 10px;
   }
 }
 
