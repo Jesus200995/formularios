@@ -37,14 +37,13 @@ const Register = () => {
     }
     
     let strength = 0;
-    if (pwd.length >= 8) strength++;
+    if (pwd.length >= 4) strength++;
     if (/[A-Z]/.test(pwd)) strength++;
     if (/[0-9]/.test(pwd)) strength++;
-    if (/[^A-Za-z0-9]/.test(pwd)) strength++;
     
     if (strength <= 1) {
       setPasswordStrength({ level: 'weak', text: 'Débil' });
-    } else if (strength <= 2) {
+    } else if (strength === 2) {
       setPasswordStrength({ level: 'medium', text: 'Media' });
     } else {
       setPasswordStrength({ level: 'strong', text: 'Fuerte' });
@@ -75,7 +74,7 @@ const Register = () => {
         return null;
       case 3:
         if (!formData.password) return 'Ingresa una contraseña';
-        if (formData.password.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
+        if (formData.password.length > 6) return 'La contraseña debe tener máximo 6 caracteres';
         if (formData.password !== formData.confirmPassword) return 'Las contraseñas no coinciden';
         if (!acceptTerms) return 'Debes aceptar los términos y condiciones';
         return null;
@@ -431,10 +430,11 @@ const Register = () => {
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       className="input-field"
-                      placeholder="Mínimo 8 caracteres"
+                      placeholder="Máximo 6 caracteres"
                       value={formData.password}
                       onChange={handleChange}
                       autoComplete="new-password"
+                      maxLength={6}
                     />
                     <button
                       type="button"
@@ -482,6 +482,7 @@ const Register = () => {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       autoComplete="new-password"
+                      maxLength={6}
                     />
                     <button
                       type="button"

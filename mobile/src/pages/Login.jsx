@@ -104,11 +104,12 @@ const Login = () => {
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 className={`input-field ${error ? 'error' : ''}`}
-                placeholder="••••••••"
+                placeholder="••••••"
                 value={formData.password}
                 onChange={handleChange}
                 required
                 autoComplete="current-password"
+                maxLength={6}
               />
               <button
                 type="button"
