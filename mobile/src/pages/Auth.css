@@ -97,18 +97,6 @@
     0 20px 40px -15px rgba(128, 0, 32, 0.15),
     0 8px 16px -8px rgba(0, 0, 0, 0.1);
   padding: 40px 32px;
-  animation: slideUp 0.6s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Efecto de luz en la esquina */
@@ -565,62 +553,6 @@
 }
 
 /* ============================================
-   DIVIDER
-   ============================================ */
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 8px 0;
-}
-
-.auth-divider::before,
-.auth-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--input-border);
-}
-
-.auth-divider span {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-/* ============================================
-   SOCIAL LOGIN
-   ============================================ */
-.social-buttons {
-  display: flex;
-  gap: 12px;
-}
-
-.btn-social {
-  flex: 1;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  border: 2px solid var(--input-border);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-social:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.15);
-}
-
-.btn-social svg {
-  width: 24px;
-  height: 24px;
-}
-
-/* ============================================
    FOOTER DE LA TARJETA
    ============================================ */
 .auth-footer {
@@ -823,38 +755,7 @@
   }
 }
 
-/* ============================================
-   ANIMACIONES DE TRANSICIÓN ENTRE STEPS
-   ============================================ */
-.step-content {
-  animation: stepIn 0.4s ease-out;
-}
 
-@keyframes stepIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.step-back .step-content {
-  animation: stepBack 0.4s ease-out;
-}
-
-@keyframes stepBack {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
 
 /* ============================================
    TÉRMINOS Y CONDICIONES
