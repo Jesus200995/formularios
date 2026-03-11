@@ -37,12 +37,12 @@ const Login = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.token) {
-        localStorage.setItem('token', data.token);
+      if (response.ok && data.access_token) {
+        localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/home');
       } else {
-        setError(data.message || 'Credenciales incorrectas');
+        setError(data.detail || data.message || 'Credenciales incorrectas');
       }
     } catch (err) {
       console.error('Error de login:', err);
