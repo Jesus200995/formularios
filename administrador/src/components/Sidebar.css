@@ -28,17 +28,26 @@
   gap: var(--spacing-md);
 }
 
-.brand-icon-circle {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-  border-radius: 50%;
+.brand-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
+  color: var(--primary);
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: iconBounce 0.6s ease-out;
+}
+
+.brand-icon:hover {
+  color: #60a5fa;
+  transform: scale(1.1) rotate(5deg);
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  50% { transform: scale(1.05) rotate(5deg); }
+  75% { transform: scale(1.08) rotate(-3deg); }
 }
 
 .brand-text-container {
@@ -86,31 +95,80 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md);
   border-radius: var(--radius-md);
   color: var(--gray-400);
-  transition: all var(--transition-fast);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--white);
+  transform: translateX(4px);
+}
+
+.nav-item:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.nav-item:active {
+  transform: translateX(2px) scale(0.98);
 }
 
 .nav-item.active {
   background: var(--primary);
   color: var(--white);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .nav-icon {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
+  font-size: 1.75rem;
   flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.15) rotate(-5deg);
+  animation: iconWiggle 0.5s ease;
+}
+
+.nav-item.active .nav-icon {
+  animation: iconPulse 0.6s ease;
+}
+
+@keyframes iconWiggle {
+  0%, 100% { transform: scale(1.15) rotate(-5deg); }
+  25% { transform: scale(1.2) rotate(5deg); }
+  50% { transform: scale(1.15) rotate(-3deg); }
+  75% { transform: scale(1.18) rotate(3deg); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 .nav-label {

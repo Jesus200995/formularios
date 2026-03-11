@@ -6,7 +6,8 @@ import {
   HiOutlineDocumentText, 
   HiOutlineChartPie, 
   HiOutlineCog,
-  HiOutlineUser
+  HiOutlineUser,
+  HiOutlineClipboardList
 } from 'react-icons/hi'
 import './Sidebar.css'
 
@@ -31,19 +32,19 @@ function Sidebar({ collapsed, mobileOpen, onMobileClose }) {
   }, [])
 
   const menuItems = [
-    { path: '/', icon: <HiOutlineChartBar size={20} />, label: 'Dashboard' },
-    { path: '/users', icon: <HiOutlineUsers size={20} />, label: 'Usuarios' },
-    { path: '/forms', icon: <HiOutlineDocumentText size={20} />, label: 'Formularios' },
-    { path: '/analytics', icon: <HiOutlineChartPie size={20} />, label: 'Analíticas' },
-    { path: '/settings', icon: <HiOutlineCog size={20} />, label: 'Configuración' }
+    { path: '/', icon: <HiOutlineChartBar size={28} />, label: 'Dashboard' },
+    { path: '/users', icon: <HiOutlineUsers size={28} />, label: 'Usuarios' },
+    { path: '/forms', icon: <HiOutlineClipboardList size={28} />, label: 'Formularios' },
+    { path: '/analytics', icon: <HiOutlineChartPie size={28} />, label: 'Analíticas' },
+    { path: '/settings', icon: <HiOutlineCog size={28} />, label: 'Configuración' }
   ]
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
         <div className="sidebar-brand">
-          <div className="brand-icon-circle">
-            <HiOutlineDocumentText size={20} />
+          <div className="brand-icon">
+            <HiOutlineClipboardList size={36} />
           </div>
           {!collapsed && (
             <div className="brand-text-container">
