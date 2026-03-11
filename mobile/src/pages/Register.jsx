@@ -74,6 +74,7 @@ const Register = () => {
         return null;
       case 3:
         if (!formData.password) return 'Ingresa una contraseña';
+        if (formData.password.length < 4) return 'La contraseña debe tener al menos 4 caracteres';
         if (formData.password.length > 6) return 'La contraseña debe tener máximo 6 caracteres';
         if (formData.password !== formData.confirmPassword) return 'Las contraseñas no coinciden';
         if (!acceptTerms) return 'Debes aceptar los términos y condiciones';
@@ -123,10 +124,11 @@ const Register = () => {
           email: formData.email,
           curp: formData.curp,
           territorio: formData.territorio,
-          puesto: formData.puesto,
-          supervisor: formData.supervisor,
+          puesto_trabajo: formData.puesto,
+          supervisor: formData.supervisor || null,
           telefono: formData.telefono,
-          password: formData.password
+          password: formData.password,
+          password_confirm: formData.confirmPassword
         }),
       });
 
@@ -139,7 +141,8 @@ const Register = () => {
         setError(data.message || 'Error al registrar. Intenta de nuevo.');
       }
     } catch (err) {
-      setError('Error de conexión. Intenta de nuevo.');
+      console.error('Error de registro:', err);
+      setError('Error de conexión. Verifica tu internet e intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -430,7 +433,7 @@ const Register = () => {
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       className="input-field"
-                      placeholder="Máximo 6 caracteres"
+                      placeholder="4 a 6 caracteres"
                       value={formData.password}
                       onChange={handleChange}
                       autoComplete="new-password"

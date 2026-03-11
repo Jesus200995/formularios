@@ -45,7 +45,8 @@ const Login = () => {
         setError(data.message || 'Credenciales incorrectas');
       }
     } catch (err) {
-      setError('Error de conexión. Intenta de nuevo.');
+      console.error('Error de login:', err);
+      setError('Error de conexión. Verifica tu internet e intenta de nuevo.');
     } finally {
       setLoading(false);
     }
