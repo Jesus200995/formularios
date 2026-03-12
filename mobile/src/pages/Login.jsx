@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -38,9 +38,10 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.access_token) {
-        localStorage.setItem('token', data.access_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/home');
+        localStorage.setItem('app_token', data.access_token);
+        localStorage.setItem('app_user', JSON.stringify(data.user));
+        if (onLogin) onLogin(data.user);
+        navigate('/');
       } else {
         setError(data.detail || data.message || 'Credenciales incorrectas');
       }
