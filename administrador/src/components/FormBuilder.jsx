@@ -78,6 +78,8 @@ function FormBuilder({ form, onSave, onCancel }) {
     title: '',
     description: '',
     status: 'draft',
+    is_public: false,
+    allow_anonymous: true,
     questions: [],
     settings: {
       theme: 'default',
@@ -99,10 +101,12 @@ function FormBuilder({ form, onSave, onCancel }) {
 
   useEffect(() => {
     if (form) {
+      // Si el formulario está publicado, debe ser público automáticamente
+      const isPublished = form.status === 'published'
       setFormData({
         ...form,
         questions: form.questions || [],
-        is_public: form.is_public ?? false,
+        is_public: isPublished ? true : (form.is_public ?? false),
         allow_anonymous: form.allow_anonymous ?? true,
         settings: form.settings || {
           theme: 'default',
@@ -238,12 +242,16 @@ function FormBuilder({ form, onSave, onCancel }) {
       appearance: q.appearance || {}
     }))
 
+    // IMPORTANTE: Si el formulario está publicado, SIEMPRE debe ser público para la app
+    const isPublished = formData.status === 'published'
+    const shouldBePublic = isPublished ? true : (formData.is_public || false)
+
     const payload = {
       title: formData.title,
       description: formData.description || '',
       status: formData.status,
       settings: formData.settings,
-      is_public: formData.is_public || false,
+      is_public: shouldBePublic,
       allow_anonymous: formData.allow_anonymous ?? true,
       questions: questionsForBackend
     }
@@ -251,8 +259,9 @@ function FormBuilder({ form, onSave, onCancel }) {
     console.log('Guardando formulario:', { 
       isEditing: form?.id && typeof form.id === 'number',
       formId: form?.id,
-      questionCount: questionsForBackend.length,
-      payload
+      status: formData.status,
+      is_public: shouldBePublic,
+      questionCount: questionsForBackend.length
     })
 
     try {
@@ -337,26 +346,23 @@ function FormBuilder({ form, onSave, onCancel }) {
             className="status-select"
           >
             <option value="draft">Borrador</option>
-            <option value="published">Publicado</option>
+            <option value="published">Publicado (visible en App)</option>
             <option value="archived">Archivado</option>
           </select>
           {formData.status === 'published' && (
-            <label className="public-toggle" style={{ 
+            <span style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '6px', 
-              fontSize: '13px',
-              color: formData.is_public ? '#059669' : '#6b7280',
-              cursor: 'pointer'
+              gap: '4px', 
+              fontSize: '12px',
+              color: '#059669',
+              fontWeight: 500,
+              padding: '4px 8px',
+              background: '#d1fae5',
+              borderRadius: '4px'
             }}>
-              <input
-                type="checkbox"
-                checked={formData.is_public ?? false}
-                onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
-                style={{ cursor: 'pointer' }}
-              />
-              <span>App Móvil</span>
-            </label>
+              ✓ Visible en App Móvil
+            </span>
           )}
           <button className="btn btn-secondary" onClick={() => setShowSettings(true)}>
             <HiOutlineCog size={18} />
