@@ -1,9 +1,9 @@
 :root {
-  /* Color Guinda / Burgundy */
-  --primary: #800020;
-  --primary-light: #a3324d;
-  --primary-dark: #5c0017;
-  --primary-gradient: linear-gradient(135deg, #800020 0%, #a3324d 100%);
+  /* Color Azul Oscuro */
+  --primary: #111827;
+  --primary-light: #1e3a5f;
+  --primary-dark: #0a1120;
+  --primary-gradient: linear-gradient(135deg, #111827 0%, #1e3a5f 100%);
   
   /* Neutrales */
   --white: #ffffff;
