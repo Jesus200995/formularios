@@ -155,9 +155,6 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
-        <footer className="footer">
-          <p>&copy; 2026 DATA Formularios. Todos los derechos reservados.</p>
-        </footer>
       </div>
       </Router>
     </>

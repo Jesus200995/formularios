@@ -31,20 +31,6 @@
   padding-top: 60px;
 }
 
-/* Footer */
-.footer {
-  background: var(--gray-900);
-  color: var(--gray-400);
-  padding: var(--spacing-lg);
-  text-align: center;
-  font-size: 0.875rem;
-}
-
-.footer p {
-  color: var(--gray-400);
-  margin: 0;
-}
-
 /* Secciones */
 .section {
   padding: var(--spacing-2xl) 0;
