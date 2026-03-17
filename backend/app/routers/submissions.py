@@ -9,9 +9,10 @@ import json
 import io
 
 from ..database import get_db
-from ..models import Form, Question, Submission, Answer, User, FormStatus
+from ..models import Form, Question, Submission, Answer, User, AppUser, FormStatus
 from ..schemas import SubmissionCreate, SubmissionResponse, AnswerCreate, ExportRequest
 from .auth import get_current_user, get_current_user_optional
+from .auth_app import get_current_app_user_optional
 
 router = APIRouter(prefix="/submissions", tags=["Submissions"])
 
@@ -21,7 +22,8 @@ async def create_submission(
     submission_data: SubmissionCreate,
     request: Request,
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional)
+    current_user: Optional[User] = Depends(get_current_user_optional),
+    current_app_user: Optional[AppUser] = Depends(get_current_app_user_optional)
 ):
     """Submit a form response"""
     # Get form
@@ -40,7 +42,7 @@ async def create_submission(
         raise HTTPException(status_code=403, detail="Form is not published")
     
     # Check anonymous access
-    if not form.allow_anonymous and not current_user:
+    if not form.allow_anonymous and not current_user and not current_app_user:
         raise HTTPException(status_code=401, detail="Authentication required")
     
     # Check date restrictions
@@ -71,10 +73,11 @@ async def create_submission(
             detail=f"Missing required questions: {missing_required}"
         )
     
-    # Create submission
+    # Create submission (vincular con app_user_id si viene desde la app móvil)
     submission = Submission(
         form_id=form_id,
         user_id=current_user.id if current_user else None,
+        app_user_id=current_app_user.id if current_app_user else None,
         status=submission_data.status,
         ip_address=request.client.host if request.client else None,
         user_agent=request.headers.get("user-agent", "")[:500],

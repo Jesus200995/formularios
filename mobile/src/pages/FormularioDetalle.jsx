@@ -125,10 +125,14 @@ function FormularioDetalle() {
         geolocation: null
       }
       
+      // Obtener token del usuario autenticado
+      const token = localStorage.getItem('app_token')
+      
       const response = await fetch(`https://apidata.geodatos.com.mx/api/submissions/forms/${formulario.id}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify(submissionData)
       })

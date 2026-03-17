@@ -8,13 +8,14 @@ import secrets
 import string
 
 from ..database import get_db
-from ..models import Form, Question, Submission, User, FormStatus as FormStatusModel
+from ..models import Form, Question, Submission, User, AppUser, FormStatus as FormStatusModel
 from ..schemas import (
     FormCreate, FormUpdate, FormResponse, FormListResponse,
     QuestionCreate, QuestionUpdate, QuestionResponse,
     FormStatistics, FormStatus
 )
 from .auth import get_current_user, get_current_user_optional
+from .auth_app import get_current_app_user_optional
 
 router = APIRouter(prefix="/forms", tags=["Forms"])
 
@@ -27,7 +28,8 @@ def generate_public_code(length: int = 8) -> str:
 async def list_published_forms_for_app(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=200),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    current_app_user: Optional[AppUser] = Depends(get_current_app_user_optional)
 ):
     """List all published and public forms for mobile app users"""
     query = select(Form).where(
@@ -40,12 +42,25 @@ async def list_published_forms_for_app(
     result = await db.execute(query)
     forms = result.scalars().all()
     
-    # Get submission counts
+    # Get submission counts (solo del usuario actual si está autenticado)
     form_list = []
     for form in forms:
-        count_result = await db.execute(
-            select(func.count(Submission.id)).where(Submission.form_id == form.id)
-        )
+        if current_app_user:
+            # Contar solo las submissions de este usuario
+            count_result = await db.execute(
+                select(func.count(Submission.id)).where(
+                    and_(
+                        Submission.form_id == form.id,
+                        Submission.app_user_id == current_app_user.id
+                    )
+                )
+            )
+        else:
+            # Si no está autenticado, mostrar 0
+            count_result = await db.execute(
+                select(func.count(Submission.id)).where(Submission.id == -1)  # Siempre retorna 0
+            )
+        
         submission_count = count_result.scalar() or 0
         
         form_dict = {

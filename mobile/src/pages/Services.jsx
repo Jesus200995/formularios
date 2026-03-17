@@ -19,10 +19,14 @@ function Services() {
       setLoading(true)
       setError(null)
       
+      // Obtener token del usuario autenticado
+      const token = localStorage.getItem('app_token')
+      
       const response = await fetch('https://apidata.geodatos.com.mx/api/forms/app/published', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         }
       })
 

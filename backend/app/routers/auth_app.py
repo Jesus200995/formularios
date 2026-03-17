@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from jose import jwt
+from jose import jwt, JWTError
 import bcrypt
 from datetime import datetime, timedelta
 from typing import Optional
@@ -12,6 +13,9 @@ from ..schemas import AppUserCreate, AppUserResponse, AppUserLogin, AppUserToken
 from ..config import settings
 
 router = APIRouter(prefix="/app-auth", tags=["App Authentication"])
+
+# OAuth2 scheme for app users
+oauth2_scheme_app = OAuth2PasswordBearer(tokenUrl="/api/app-auth/login", auto_error=False)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -194,36 +198,49 @@ async def login_app_user(credentials: AppUserLogin, db: AsyncSession = Depends(g
 
 @router.get("/me", response_model=AppUserResponse)
 async def get_current_app_user(
-    token: str,
+    token: str = Depends(oauth2_scheme_app),
     db: AsyncSession = Depends(get_db)
-):
-    """Get current app user profile"""
+) -> AppUser:
+    """Get current authenticated app user"""
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token inválido o expirado",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    if not token:
+        raise credentials_exception
+    
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         user_id = int(payload.get("sub"))
         user_type = payload.get("type")
         
         if user_type != "app_user":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token no válido para usuario de app"
-            )
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido o expirado"
-        )
+            raise credentials_exception
+    except (JWTError, ValueError):
+        raise credentials_exception
     
     result = await db.execute(select(AppUser).where(AppUser.id == user_id))
     user = result.scalar_one_or_none()
     
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado"
-        )
+        raise credentials_exception
     
     return user
+
+
+async def get_current_app_user_optional(
+    token: Optional[str] = Depends(oauth2_scheme_app),
+    db: AsyncSession = Depends(get_db)
+) -> Optional[AppUser]:
+    """Get current app user if authenticated, None otherwise"""
+    if not token:
+        return None
+    try:
+        return await get_current_app_user(token, db)
+    except HTTPException:
+        return None
 
 
 @router.get("/territorios")

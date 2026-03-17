@@ -151,6 +151,7 @@ class Submission(Base):
     id = Column(Integer, primary_key=True, index=True)
     form_id = Column(Integer, ForeignKey("forms.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    app_user_id = Column(Integer, ForeignKey("app_users.id"), nullable=True)  # Usuario de la app móvil
     status = Column(String(50), default="completed")  # draft, completed, validated
     
     # Metadata
@@ -169,6 +170,7 @@ class Submission(Base):
     
     form = relationship("Form", back_populates="submissions")
     user = relationship("User", back_populates="submissions")
+    app_user = relationship("AppUser", back_populates="submissions")
     answers = relationship("Answer", back_populates="submission", cascade="all, delete-orphan")
 
 class Answer(Base):
@@ -222,3 +224,6 @@ class AppUser(Base):
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    submissions = relationship("Submission", back_populates="app_user")
