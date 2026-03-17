@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 function Home() {
   const features = [
     {
@@ -34,18 +36,18 @@ function Home() {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Bienvenido a Mobile App</h1>
+          <h1>Bienvenido a DATA Formularios</h1>
           <p>
-            La mejor aplicación PWA para gestionar tus tareas diarias. 
+            La mejor aplicación PWA para gestionar tus formularios. 
             Rápida, segura y disponible en cualquier dispositivo.
           </p>
           <div className="hero-buttons">
-            <button className="btn btn-primary btn-lg">
-              Comenzar Ahora
-            </button>
-            <button className="btn btn-secondary btn-lg">
-              Saber Más
-            </button>
+            <Link to="/services" className="btn btn-primary btn-lg" style={{ textDecoration: 'none' }}>
+              Ver Formularios
+            </Link>
+            <Link to="/about" className="btn btn-secondary btn-lg" style={{ textDecoration: 'none' }}>
+              Mi Perfil
+            </Link>
           </div>
         </div>
       </section>
