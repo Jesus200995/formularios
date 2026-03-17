@@ -325,8 +325,9 @@ function Services() {
 
       {/* Grid with fade effect */}
       {filteredFormularios.length > 0 ? (
-        <div className="formularios-grid-wrapper">
-          <div className="formularios-grid">
+        <div className="formularios-container-card">
+          <div className="formularios-grid-wrapper">
+            <div className="formularios-grid">
           {filteredFormularios.map(form => (
             <div key={form.id} className="formulario-card" onClick={() => handleOpenForm(form.id, form.public_code)}>
               <div className="card-header">
@@ -379,10 +380,12 @@ function Services() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+          </div>
         </div>
       ) : (
-        <div className="formularios-grid-wrapper">
+        <div className="formularios-container-card">
+          <div className="formularios-grid-wrapper">
           <div className="empty-state">
             <div className="empty-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -394,6 +397,7 @@ function Services() {
             </div>
             <h3>No hay formularios disponibles</h3>
             <p>No se encontraron formularios. Intenta ajustar los filtros o contacta a tu supervisor.</p>
+          </div>
           </div>
         </div>
       )}
