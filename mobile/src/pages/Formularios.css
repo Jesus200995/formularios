@@ -192,8 +192,9 @@
 
 /* Tabs Filter */
 .formularios-tabs {
-  padding: 0 20px 12px;
+  padding: 8px 20px 16px;
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   display: flex;
@@ -206,34 +207,48 @@
 
 .tabs-container {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   min-width: min-content;
   justify-content: center;
+  padding: 4px 0;
+  background: rgba(120, 120, 128, 0.12);
+  border-radius: 22px;
+  padding: 3px;
 }
 
 .tab-button {
-  padding: 10px 20px;
+  padding: 10px 18px;
   border: none;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.9);
+  background: transparent;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   white-space: nowrap;
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  position: relative;
+  z-index: 1;
 }
 
-.tab-button:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: translateY(-1px);
+.tab-button:hover:not(.active) {
+  color: #333;
+}
+
+.tab-button:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  background: #ffffff;
+  color: #059669;
+  font-weight: 600;
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  transform: scale(1);
 }
 
 /* Formularios Container Card - Estilo Apple */
@@ -447,28 +462,30 @@
 .card-info-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 16px;
-  padding: 12px 14px;
+  padding: 10px 12px;
   background: linear-gradient(135deg, rgba(5, 150, 105, 0.04) 0%, rgba(16, 185, 129, 0.02) 100%);
   border-radius: 12px;
   border: 1px solid rgba(5, 150, 105, 0.08);
+  flex-wrap: nowrap;
 }
 
 .card-date-info,
 .card-responses-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
+  gap: 6px;
+  font-size: 0.75rem;
   color: #047857;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .card-date-info svg,
 .card-responses-info svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   stroke: #10b981;
   flex-shrink: 0;
 }
@@ -714,7 +731,19 @@
   }
   
   .formularios-tabs {
-    padding: 0 16px 12px;
+    padding: 6px 16px 14px;
+  }
+  
+  .tabs-container {
+    gap: 0;
+    padding: 3px;
+    border-radius: 20px;
+  }
+  
+  .tab-button {
+    padding: 9px 14px;
+    font-size: 12px;
+    border-radius: 17px;
   }
   
   .formularios-container-card {
@@ -730,6 +759,23 @@
     gap: 12px;
   }
   
+  .card-info-row {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  
+  .card-date-info,
+  .card-responses-info {
+    font-size: 0.68rem;
+    gap: 4px;
+  }
+  
+  .card-date-info svg,
+  .card-responses-info svg {
+    width: 12px;
+    height: 12px;
+  }
+  
   .empty-state {
     padding: 40px 16px;
   }
@@ -737,5 +783,54 @@
   .refresh-button svg {
     width: 20px;
     height: 20px;
+  }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 380px) {
+  .formularios-tabs {
+    padding: 4px 12px 12px;
+  }
+  
+  .tabs-container {
+    gap: 0;
+    padding: 2px;
+    border-radius: 18px;
+  }
+  
+  .tab-button {
+    padding: 8px 12px;
+    font-size: 11px;
+    border-radius: 16px;
+  }
+  
+  .card-info-row {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  
+  .card-date-info,
+  .card-responses-info {
+    font-size: 0.62rem;
+    gap: 3px;
+  }
+  
+  .card-date-info svg,
+  .card-responses-info svg {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .card-title-section h3 {
+    font-size: 0.9rem;
+  }
+  
+  .card-description {
+    font-size: 0.8rem;
+  }
+  
+  .card-respond-btn {
+    padding: 12px 16px;
+    font-size: 0.85rem;
   }
 }
