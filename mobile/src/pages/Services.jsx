@@ -46,7 +46,10 @@ function Services() {
         responses: form.submission_count || 0,
         lastUpdated: getRelativeTime(form.updated_at),
         status: form.status === 'published' ? 'active' : 'draft',
-        created_at: form.created_at
+        created_at: form.created_at,
+        updated_at: form.updated_at,
+        formattedDate: formatExactDate(form.created_at),
+        formattedUpdateDate: formatExactDate(form.updated_at)
       }))
       
       setFormularios(mappedForms)
@@ -154,6 +157,18 @@ function Services() {
     if (diffDays < 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`
     if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semana${Math.floor(diffDays / 7) > 1 ? 's' : ''}`
     return date.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' })
+  }
+
+  const formatExactDate = (dateString) => {
+    if (!dateString) return 'Sin fecha'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('es-MX', { 
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
   }
 
   const tabs = [
@@ -330,43 +345,48 @@ function Services() {
             <div className="formularios-grid">
           {filteredFormularios.map(form => (
             <div key={form.id} className="formulario-card" onClick={() => handleOpenForm(form.id, form.public_code)}>
-              <div className="card-main-row">
+              {/* Header con título y estado */}
+              <div className="card-header-row">
                 <div className="card-icon-box">{form.icon}</div>
-                <div className="card-info">
+                <div className="card-title-section">
                   <h3>{form.title}</h3>
-                  <p>{form.description}</p>
-                </div>
-                <button className="card-menu" onClick={(e) => e.stopPropagation()}>
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="5" r="2"/>
-                    <circle cx="12" cy="12" r="2"/>
-                    <circle cx="12" cy="19" r="2"/>
-                  </svg>
-                </button>
-              </div>
-              
-              <div className="card-bottom">
-                <div className="card-meta">
-                  <div className="meta-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                    </svg>
-                    <span>{form.responses}</span>
-                  </div>
-                  <span className={`card-status ${form.status}`}>
-                    {form.status === 'active' && 'Activo'}
-                    {form.status === 'draft' && 'Borrador'}
-                    {form.status === 'archived' && 'Archivado'}
+                  <span className={`card-status-badge ${form.status}`}>
+                    <span className="status-dot"></span>
+                    {form.status === 'active' ? 'Activo' : form.status === 'draft' ? 'Borrador' : 'Archivado'}
                   </span>
                 </div>
-                <button className="card-respond-btn" onClick={(e) => { e.stopPropagation(); handleOpenForm(form.id, form.public_code) }}>
-                  <span>Responder</span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </button>
               </div>
+              
+              {/* Descripción */}
+              <p className="card-description">{form.description}</p>
+              
+              {/* Info de fecha y respuestas */}
+              <div className="card-info-row">
+                <div className="card-date-info">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <span>{form.formattedDate}</span>
+                </div>
+                <div className="card-responses-info">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  <span>{form.responses} respuesta{form.responses !== 1 ? 's' : ''}</span>
+                </div>
+              </div>
+              
+              {/* Botón responder */}
+              <button className="card-respond-btn" onClick={(e) => { e.stopPropagation(); handleOpenForm(form.id, form.public_code) }}>
+                <span>Responder formulario</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
             </div>
           ))}
           </div>
