@@ -1,13 +1,14 @@
 /* =====================================================
    Navbar Styles - Apple Design System Enhanced
-   Fondo blanco, colores guinda, ultra fluido y moderno
+   Fondo azul oscuro, ultra fluido y moderno
 ===================================================== */
 
 :root {
-  --guinda-600: #cf2c54;
-  --guinda-700: #ae2045;
-  --guinda-800: #911d3e;
-  --guinda-950: #800020;
+  --navy-800: #1e3a5f;
+  --navy-900: #111827;
+  --navy-950: #0a1120;
+  --accent-blue: #3b82f6;
+  --accent-light: #60a5fa;
 }
 
 .navbar {
@@ -16,10 +17,10 @@
   left: 0;
   right: 0;
   height: 60px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--navy-900);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   z-index: 100;
   transition: box-shadow 0.3s ease;
 }
@@ -42,7 +43,7 @@
   gap: 10px;
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--guinda-950);
+  color: #ffffff;
   text-decoration: none;
   position: relative;
   z-index: 110;
@@ -51,7 +52,7 @@
 .brand-icon {
   width: 36px;
   height: 36px;
-  color: var(--guinda-950);
+  color: var(--accent-light);
   transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -63,6 +64,7 @@
   font-weight: 700;
   font-size: 18px;
   letter-spacing: -0.01em;
+  color: #ffffff;
 }
 
 /* User Badge (visible when menu closed) */
@@ -79,7 +81,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--guinda-600) 0%, var(--guinda-800) 100%);
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--navy-800) 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -87,13 +89,13 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  box-shadow: 0 2px 8px rgba(128, 0, 32, 0.2);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .user-badge:hover .user-initials {
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 /* Hamburger Menu */
@@ -115,7 +117,7 @@
 }
 
 .hamburger:hover {
-  background: rgba(128, 0, 32, 0.08);
+  background: rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
 }
 
@@ -127,7 +129,7 @@
   display: block;
   width: 100%;
   height: 2.5px;
-  background: var(--guinda-950);
+  background: #ffffff;
   border-radius: 2px;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   transform-origin: center;
@@ -135,7 +137,7 @@
 
 .hamburger.active span:nth-child(1) {
   transform: rotate(45deg) translate(6px, 6px);
-  background: var(--guinda-700);
+  background: var(--accent-light);
 }
 
 .hamburger.active span:nth-child(2) {
@@ -145,7 +147,7 @@
 
 .hamburger.active span:nth-child(3) {
   transform: rotate(-45deg) translate(6px, -6px);
-  background: var(--guinda-700);
+  background: var(--accent-light);
 }
 
 /* Overlay con Backdrop Blur - MEJORADO */
@@ -178,8 +180,8 @@
   max-width: 360px;
   height: 100vh;
   height: 100dvh;
-  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
-  box-shadow: -30px 0 80px rgba(0, 0, 0, 0.3), -10px 0 40px rgba(128, 0, 32, 0.1);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: -30px 0 80px rgba(0, 0, 0, 0.3), -10px 0 40px rgba(17, 24, 39, 0.2);
   display: flex;
   flex-direction: column;
   transform: translateX(110%);
@@ -191,13 +193,13 @@
 
 .nav-drawer.active {
   transform: translateX(0);
-  box-shadow: -30px 0 100px rgba(0, 0, 0, 0.4), -10px 0 50px rgba(128, 0, 32, 0.15);
+  box-shadow: -30px 0 100px rgba(0, 0, 0, 0.4), -10px 0 50px rgba(17, 24, 39, 0.25);
 }
 
 /* Drawer Header - Rediseñado */
 .drawer-header {
   padding: 28px 24px;
-  background: linear-gradient(135deg, var(--guinda-600) 0%, var(--guinda-800) 100%);
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-900) 100%);
   padding-top: calc(28px + env(safe-area-inset-top, 0));
   position: relative;
   overflow: hidden;
@@ -330,7 +332,7 @@
   top: 0;
   bottom: 0;
   width: 5px;
-  background: linear-gradient(180deg, var(--guinda-600) 0%, var(--guinda-800) 100%);
+  background: linear-gradient(180deg, var(--accent-blue) 0%, var(--navy-800) 100%);
   border-radius: 0 4px 4px 0;
   opacity: 0;
   transform: scaleY(0);
@@ -341,7 +343,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(128, 0, 32, 0.06) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -372,8 +374,8 @@
 }
 
 .nav-link:hover {
-  background: rgba(128, 0, 32, 0.08);
-  color: var(--guinda-700);
+  background: rgba(59, 130, 246, 0.08);
+  color: var(--navy-800);
   transform: translateX(4px);
   padding-left: 28px;
 }
@@ -392,9 +394,9 @@
 }
 
 .nav-link.active {
-  color: var(--guinda-700);
+  color: var(--navy-900);
   font-weight: 600;
-  background: linear-gradient(90deg, rgba(128, 0, 32, 0.12) 0%, rgba(128, 0, 32, 0.06) 100%);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.06) 100%);
 }
 
 .nav-link.active::before {
@@ -403,7 +405,7 @@
 }
 
 .nav-link.active .nav-link-icon {
-  color: var(--guinda-700);
+  color: var(--accent-blue);
 }
 
 .nav-link.active .nav-link-arrow {
@@ -418,7 +420,7 @@
 /* Drawer Footer - Mejorado */
 .drawer-footer {
   padding: 20px 24px;
-  background: linear-gradient(180deg, rgba(128, 0, 32, 0.02) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.03) 0%, transparent 100%);
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding-bottom: calc(20px + env(safe-area-inset-bottom, 0));
 }
@@ -433,12 +435,12 @@
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, var(--guinda-700) 0%, var(--guinda-950) 100%);
+  background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-950) 100%);
   border: none;
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(128, 0, 32, 0.3), 0 2px 8px rgba(128, 0, 32, 0.2);
+  box-shadow: 0 4px 16px rgba(17, 24, 39, 0.3), 0 2px 8px rgba(17, 24, 39, 0.2);
   position: relative;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
@@ -471,7 +473,7 @@
 
 .logout-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 28px rgba(128, 0, 32, 0.4), 0 4px 16px rgba(128, 0, 32, 0.3);
+  box-shadow: 0 12px 28px rgba(17, 24, 39, 0.4), 0 4px 16px rgba(17, 24, 39, 0.3);
 }
 
 .logout-button:hover::before {
@@ -485,7 +487,7 @@
 
 .logout-button:active {
   transform: translateY(-1px) scale(0.98);
-  box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+  box-shadow: 0 4px 12px rgba(17, 24, 39, 0.3);
 }
 
 .logout-button svg {
@@ -572,12 +574,12 @@
 }
 
 .nav-links::-webkit-scrollbar-thumb {
-  background: rgba(128, 0, 32, 0.2);
+  background: rgba(17, 24, 39, 0.2);
   border-radius: 4px;
 }
 
 .nav-links::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 0, 32, 0.3);
+  background: rgba(17, 24, 39, 0.3);
 }
 
 /* =====================================================
