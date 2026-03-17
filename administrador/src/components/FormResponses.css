@@ -227,6 +227,30 @@
   color: #92400e;
 }
 
+/* User cell styles */
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 0.875rem;
+}
+
+.user-email {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.anonymous-user {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 0.875rem;
+}
+
 .table-actions {
   display: flex;
   gap: 8px;
@@ -386,6 +410,26 @@
 .submission-meta p {
   margin: 4px 0;
   font-size: 0.875rem;
+}
+
+.user-info-box {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.user-info-box h4 {
+  margin: 0 0 8px;
+  color: #065f46;
+  font-size: 0.875rem;
+}
+
+.user-info-box p {
+  margin: 4px 0;
+  font-size: 0.8125rem;
+  color: #047857;
 }
 
 .submission-answers h4 {

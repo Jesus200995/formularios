@@ -264,10 +264,24 @@ class SubmissionBase(BaseModel):
 class SubmissionCreate(SubmissionBase):
     answers: List[AnswerCreate]
 
+# Info básica del usuario de app para mostrar en respuestas
+class AppUserBasic(BaseModel):
+    id: int
+    nombre: str
+    apellidos: str
+    email: str
+    territorio: Optional[str] = None
+    puesto_trabajo: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
 class SubmissionResponse(SubmissionBase):
     id: int
     form_id: int
     user_id: Optional[int]
+    app_user_id: Optional[int] = None
+    app_user: Optional[AppUserBasic] = None
     started_at: datetime
     completed_at: Optional[datetime]
     duration_seconds: Optional[int]

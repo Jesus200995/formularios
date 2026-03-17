@@ -152,7 +152,7 @@ async def list_submissions(
     if date_to:
         query = query.where(Submission.created_at <= date_to)
     
-    query = query.options(selectinload(Submission.answers))
+    query = query.options(selectinload(Submission.answers), selectinload(Submission.app_user))
     query = query.order_by(Submission.created_at.desc()).offset(skip).limit(limit)
     
     result = await db.execute(query)
@@ -169,9 +169,9 @@ async def get_submission(
     """Get a specific submission"""
     # Build query based on user role
     if current_user.role == "admin":
-        query = select(Submission).options(selectinload(Submission.answers)).where(Submission.id == submission_id)
+        query = select(Submission).options(selectinload(Submission.answers), selectinload(Submission.app_user)).where(Submission.id == submission_id)
     else:
-        query = select(Submission).options(selectinload(Submission.answers)).join(Form).where(
+        query = select(Submission).options(selectinload(Submission.answers), selectinload(Submission.app_user)).join(Form).where(
             and_(Submission.id == submission_id, Form.owner_id == current_user.id)
         )
     

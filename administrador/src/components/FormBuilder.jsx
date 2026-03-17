@@ -325,13 +325,39 @@ function FormBuilder({ form, onSave, onCancel }) {
         <div className="header-right">
           <select
             value={formData.status}
-            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            onChange={(e) => {
+              const newStatus = e.target.value
+              // Cuando se publica, automáticamente hacerlo público para la app móvil
+              if (newStatus === 'published') {
+                setFormData({ ...formData, status: newStatus, is_public: true })
+              } else {
+                setFormData({ ...formData, status: newStatus })
+              }
+            }}
             className="status-select"
           >
             <option value="draft">Borrador</option>
             <option value="published">Publicado</option>
             <option value="archived">Archivado</option>
           </select>
+          {formData.status === 'published' && (
+            <label className="public-toggle" style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '6px', 
+              fontSize: '13px',
+              color: formData.is_public ? '#059669' : '#6b7280',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={formData.is_public ?? false}
+                onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
+                style={{ cursor: 'pointer' }}
+              />
+              <span>App Móvil</span>
+            </label>
+          )}
           <button className="btn btn-secondary" onClick={() => setShowSettings(true)}>
             <HiOutlineCog size={18} />
           </button>

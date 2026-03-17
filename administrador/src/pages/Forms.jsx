@@ -122,13 +122,26 @@ function Forms() {
     responses: forms.reduce((acc, f) => acc + (f.submission_count || 0), 0)
   }
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, isPublic) => {
     const badges = {
       published: <span className="badge badge-success">Publicado</span>,
       draft: <span className="badge badge-warning">Borrador</span>,
       archived: <span className="badge badge-secondary">Archivado</span>
     }
-    return badges[status] || <span className="badge">{status}</span>
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+        {badges[status] || <span className="badge">{status}</span>}
+        {status === 'published' && (
+          <span style={{ 
+            fontSize: '10px', 
+            color: isPublic ? '#059669' : '#f59e0b',
+            fontWeight: 500
+          }}>
+            {isPublic ? '✓ App Móvil' : '⚠ No visible en App'}
+          </span>
+        )}
+      </div>
+    )
   }
 
   const handleCreateNew = () => { setSelectedForm(null); setView('builder') }
@@ -350,7 +363,7 @@ function Forms() {
                 <div key={form.id} className="form-card">
                   <div className="form-card-header">
                     <div className="form-icon"><HiOutlineClipboardList size={28} /></div>
-                    {getStatusBadge(form.status)}
+                    {getStatusBadge(form.status, form.is_public)}
                   </div>
                   <div className="form-card-body">
                     <h4>{form.title}</h4>

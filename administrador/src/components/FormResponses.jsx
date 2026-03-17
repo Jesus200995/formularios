@@ -264,10 +264,11 @@ function FormResponses({ form, onBack }) {
                 <thead>
                   <tr>
                     <th>#</th>
+                    <th>Usuario</th>
                     <th>Fecha</th>
                     <th>Estado</th>
-                    {(form.questions || []).slice(0, 4).map((q, i) => (
-                      <th key={i}>{q.label?.substring(0, 30) || `Pregunta ${i + 1}`}</th>
+                    {(form.questions || []).slice(0, 3).map((q, i) => (
+                      <th key={i}>{q.label?.substring(0, 25) || `Pregunta ${i + 1}`}</th>
                     ))}
                     <th>Acciones</th>
                   </tr>
@@ -276,13 +277,23 @@ function FormResponses({ form, onBack }) {
                   {submissions.map((sub, idx) => (
                     <tr key={sub.id}>
                       <td>{(page - 1) * 20 + idx + 1}</td>
+                      <td>
+                        {sub.app_user ? (
+                          <div className="user-cell">
+                            <span className="user-name">{sub.app_user.nombre} {sub.app_user.apellidos}</span>
+                            <span className="user-email">{sub.app_user.email}</span>
+                          </div>
+                        ) : (
+                          <span className="anonymous-user">Anónimo</span>
+                        )}
+                      </td>
                       <td>{new Date(sub.created_at).toLocaleString('es-MX')}</td>
                       <td>
                         <span className={`status-badge ${sub.status}`}>
                           {sub.status === 'completed' ? 'Completado' : sub.status}
                         </span>
                       </td>
-                      {(form.questions || []).slice(0, 4).map((q, i) => (
+                      {(form.questions || []).slice(0, 3).map((q, i) => (
                         <td key={i}>{getAnswerValue(sub, i)}</td>
                       ))}
                       <td>
@@ -341,6 +352,19 @@ function FormResponses({ form, onBack }) {
             </div>
             <div className="modal-body">
               <div className="submission-meta">
+                {selectedSubmission.app_user && (
+                  <div className="user-info-box">
+                    <h4>Usuario</h4>
+                    <p><strong>Nombre:</strong> {selectedSubmission.app_user.nombre} {selectedSubmission.app_user.apellidos}</p>
+                    <p><strong>Email:</strong> {selectedSubmission.app_user.email}</p>
+                    {selectedSubmission.app_user.territorio && (
+                      <p><strong>Territorio:</strong> {selectedSubmission.app_user.territorio}</p>
+                    )}
+                    {selectedSubmission.app_user.puesto_trabajo && (
+                      <p><strong>Puesto:</strong> {selectedSubmission.app_user.puesto_trabajo}</p>
+                    )}
+                  </div>
+                )}
                 <p><strong>Fecha:</strong> {new Date(selectedSubmission.created_at).toLocaleString('es-MX')}</p>
                 <p><strong>Estado:</strong> {selectedSubmission.status}</p>
               </div>
