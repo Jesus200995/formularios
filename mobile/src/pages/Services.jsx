@@ -330,8 +330,12 @@ function Services() {
             <div className="formularios-grid">
           {filteredFormularios.map(form => (
             <div key={form.id} className="formulario-card" onClick={() => handleOpenForm(form.id, form.public_code)}>
-              <div className="card-header">
-                <div className="card-icon">{form.icon}</div>
+              <div className="card-main-row">
+                <div className="card-icon-box">{form.icon}</div>
+                <div className="card-info">
+                  <h3>{form.title}</h3>
+                  <p>{form.description}</p>
+                </div>
                 <button className="card-menu" onClick={(e) => e.stopPropagation()}>
                   <svg viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="5" r="2"/>
@@ -341,41 +345,26 @@ function Services() {
                 </button>
               </div>
               
-              <div className="card-content">
-                <h3>{form.title}</h3>
-                <p>{form.description}</p>
-                
+              <div className="card-bottom">
                 <div className="card-meta">
                   <div className="meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                       <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                     </svg>
-                    <span>{form.responses} respuestas</span>
+                    <span>{form.responses}</span>
                   </div>
-                  <div className="meta-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="10"/>
-                      <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <span>{form.lastUpdated}</span>
-                  </div>
+                  <span className={`card-status ${form.status}`}>
+                    {form.status === 'active' && 'Activo'}
+                    {form.status === 'draft' && 'Borrador'}
+                    {form.status === 'archived' && 'Archivado'}
+                  </span>
                 </div>
-              </div>
-
-              <div className="card-footer">
-                <span className={`card-status ${form.status}`}>
-                  <svg width="8" height="8" viewBox="0 0 8 8">
-                    <circle cx="4" cy="4" r="3" fill="currentColor"/>
+                <button className="card-respond-btn" onClick={(e) => { e.stopPropagation(); handleOpenForm(form.id, form.public_code) }}>
+                  <span>Responder</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
-                  {form.status === 'active' && 'Activo'}
-                  {form.status === 'draft' && 'Borrador'}
-                  {form.status === 'archived' && 'Archivado'}
-                </span>
-                <button className="card-button" onClick={(e) => { e.stopPropagation(); handleOpenForm(form.id, form.public_code) }}>
-                  Abrir
                 </button>
               </div>
             </div>
