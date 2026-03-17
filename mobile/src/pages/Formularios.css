@@ -224,20 +224,20 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
-/* Formularios Container Card - Verde Oscuro */
+/* Formularios Container Card - Verde Natural */
 .formularios-container-card {
   position: fixed;
   top: 300px;
   left: 20px;
   right: 20px;
   bottom: 20px;
-  background: rgba(6, 78, 59, 0.95);
+  background: rgba(16, 185, 129, 0.4);
   border-radius: 40px;
   padding: 25px 20px 20px 20px;
   box-shadow: 
-    0 4px 16px rgba(6, 78, 59, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+    0 2px 12px rgba(16, 185, 129, 0.12),
+    0 1px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   backdrop-filter: blur(10px);
 }
 
