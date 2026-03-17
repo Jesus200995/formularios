@@ -8,13 +8,13 @@ export default defineConfig({
     VitePWA({
       registerType: 'prompt',
       injectRegister: 'auto',
-      includeAssets: ['images/logo.png', 'favicon.ico'],
+      includeAssets: ['images/logo2.png', 'favicon.ico'],
       manifest: {
         id: '/data-formularios',
         name: 'DATA Formularios',
         short_name: 'DATA',
         description: 'Aplicación móvil de formularios DATA',
-        theme_color: '#800020',
+        theme_color: '#111827',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
@@ -23,55 +23,55 @@ export default defineConfig({
         categories: ['productivity', 'utilities'],
         icons: [
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '72x72',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '96x96',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '128x128',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '144x144',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '152x152',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '384x384',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/images/logo.png',
+            src: '/images/logo2.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
