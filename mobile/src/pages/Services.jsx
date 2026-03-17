@@ -1,87 +1,143 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Formularios.css'
 
 function Services() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('todos')
   const [searchQuery, setSearchQuery] = useState('')
+  const [formularios, setFormularios] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const formularios = [
-    {
-      id: 1,
-      icon: '🌱',
-      title: 'Registro de Cultivos',
-      description: 'Formulario para registro y monitoreo de cultivos agrícolas',
-      responses: 124,
-      lastUpdated: 'Hace 2 horas',
-      status: 'active'
-    },
-    {
-      id: 2,
-      icon: '📋',
-      title: 'Evaluación de Producción',
-      description: 'Evaluación mensual de producción y rendimiento',
-      responses: 87,
-      lastUpdated: 'Hace 5 horas',
-      status: 'active'
-    },
-    {
-      id: 3,
-      icon: '👥',
-      title: 'Censo Comunitario',
-      description: 'Recolección de datos demográficos de la comunidad',
-      responses: 342,
-      lastUpdated: 'Hace 1 día',
-      status: 'active'
-    },
-    {
-      id: 4,
-      icon: '🏠',
-      title: 'Registro de Familias',
-      description: 'Información básica de familias beneficiarias',
-      responses: 0,
-      lastUpdated: 'Hace 3 días',
-      status: 'draft'
-    },
-    {
-      id: 5,
-      icon: '🌾',
-      title: 'Control de Plagas',
-      description: 'Monitoreo y reporte de plagas en cultivos',
-      responses: 56,
-      lastUpdated: 'Hace 1 semana',
-      status: 'active'
-    },
-    {
-      id: 6,
-      icon: '💰',
-      title: 'Solicitud de Apoyos',
-      description: 'Formulario para solicitud de apoyos económicos',
-      responses: 198,
-      lastUpdated: 'Hace 2 semanas',
-      status: 'archived'
+  useEffect(() => {
+    fetchFormularios()
+  }, [])
+
+  const fetchFormularios = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch('https://apidata.geodatos.com.mx/api/forms/app/published', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Error al cargar formularios')
+      }
+
+      const data = await response.json()
+      
+      // Mapear los formularios del backend al formato de la UI
+      const mappedForms = data.map(form => ({
+        id: form.id,
+        public_code: form.public_code,
+        icon: getFormIcon(form.title),
+        title: form.title,
+        description: form.description || 'Sin descripción',
+        responses: form.submission_count || 0,
+        lastUpdated: getRelativeTime(form.updated_at),
+        status: form.status === 'published' ? 'active' : 'draft',
+        created_at: form.created_at
+      }))
+      
+      setFormularios(mappedForms)
+    } catch (err) {
+      console.error('Error:', err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-  ]
+  }
+
+  const getFormIcon = (title) => {
+    const titleLower = title.toLowerCase()
+    if (titleLower.includes('cultivo') || titleLower.includes('siembra')) return '🌱'
+    if (titleLower.includes('producción') || titleLower.includes('cosecha')) return '📋'
+    if (titleLower.includes('censo') || titleLower.includes('población')) return '👥'
+    if (titleLower.includes('familia') || titleLower.includes('hogar')) return '🏠'
+    if (titleLower.includes('plaga') || titleLower.includes('control')) return '🌾'
+    if (titleLower.includes('apoyo') || titleLower.includes('solicitud')) return '💰'
+    if (titleLower.includes('salud') || titleLower.includes('médico')) return '🏥'
+    if (titleLower.includes('educación') || titleLower.includes('escuela')) return '📚'
+    return '📝'
+  }
+
+  const getRelativeTime = (dateString) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now - date
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+    
+    if (diffMins < 60) return `Hace ${diffMins} min`
+    if (diffHours < 24) return `Hace ${diffHours} hora${diffHours > 1 ? 's' : ''}`
+    if (diffDays < 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`
+    if (diffDays < 30) return `Hace ${Math.floor(diffDays / 7)} semana${Math.floor(diffDays / 7) > 1 ? 's' : ''}`
+    return date.toLocaleDateString('es-MX', { month: 'short', day: 'numeric' })
+  }
 
   const tabs = [
     { id: 'todos', label: 'Todos', count: formularios.length },
     { id: 'active', label: 'Activos', count: formularios.filter(f => f.status === 'active').length },
-    { id: 'draft', label: 'Borradores', count: formularios.filter(f => f.status === 'draft').length },
-    { id: 'archived', label: 'Archivados', count: formularios.filter(f => f.status === 'archived').length }
+    { id: 'pendientes', label: 'Pendientes', count: formularios.filter(f => f.responses === 0).length }
   ]
 
   const filteredFormularios = formularios.filter(form => {
-    const matchesTab = activeTab === 'todos' || form.status === activeTab
+    const matchesTab = activeTab === 'todos' || 
+                       (activeTab === 'active' && form.status === 'active') ||
+                       (activeTab === 'pendientes' && form.responses === 0)
     const matchesSearch = form.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          form.description.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesTab && matchesSearch
   })
 
   const handleCreateNew = () => {
-    console.log('Crear nuevo formulario')
+    console.log('Crear nuevo formulario - Solo para administradores')
   }
 
-  const handleOpenForm = (formId) => {
-    console.log('Abrir formulario:', formId)
+  const handleOpenForm = (formId, publicCode) => {
+    navigate(`/formulario/${publicCode || formId}`)
+  }
+
+  if (loading) {
+    return (
+      <div className="formularios-page">
+        <div className="formularios-hero">
+          <h1>Formularios</h1>
+          <p>Cargando formularios disponibles...</p>
+        </div>
+        <div className="empty-state">
+          <div className="empty-icon">⏳</div>
+          <h3>Cargando...</h3>
+          <p>Por favor espera un momento</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="formularios-page">
+        <div className="formularios-hero">
+          <h1>Formularios</h1>
+          <p>Error al cargar formularios</p>
+        </div>
+        <div className="empty-state">
+          <div className="empty-icon">⚠️</div>
+          <h3>Error de conexión</h3>
+          <p>{error}</p>
+          <button className="empty-button" onClick={fetchFormularios}>
+            Reintentar
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -128,7 +184,7 @@ function Services() {
       {filteredFormularios.length > 0 ? (
         <div className="formularios-grid">
           {filteredFormularios.map(form => (
-            <div key={form.id} className="formulario-card" onClick={() => handleOpenForm(form.id)}>
+            <div key={form.id} className="formulario-card" onClick={() => handleOpenForm(form.id, form.public_code)}>
               <div className="card-header">
                 <div className="card-icon">{form.icon}</div>
                 <button className="card-menu" onClick={(e) => e.stopPropagation()}>
@@ -173,7 +229,7 @@ function Services() {
                   {form.status === 'draft' && 'Borrador'}
                   {form.status === 'archived' && 'Archivado'}
                 </span>
-                <button className="card-button" onClick={(e) => { e.stopPropagation(); handleOpenForm(form.id) }}>
+                <button className="card-button" onClick={(e) => { e.stopPropagation(); handleOpenForm(form.id, form.public_code) }}>
                   Abrir
                 </button>
               </div>

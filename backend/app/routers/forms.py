@@ -23,6 +23,46 @@ def generate_public_code(length: int = 8) -> str:
     chars = string.ascii_lowercase + string.digits
     return ''.join(secrets.choice(chars) for _ in range(length))
 
+@router.get("/app/published", response_model=List[FormListResponse])
+async def list_published_forms_for_app(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=200),
+    db: AsyncSession = Depends(get_db)
+):
+    """List all published and public forms for mobile app users"""
+    query = select(Form).where(
+        and_(
+            Form.status == FormStatusModel.PUBLISHED,
+            Form.is_public == True
+        )
+    ).order_by(Form.updated_at.desc()).offset(skip).limit(limit)
+    
+    result = await db.execute(query)
+    forms = result.scalars().all()
+    
+    # Get submission counts
+    form_list = []
+    for form in forms:
+        count_result = await db.execute(
+            select(func.count(Submission.id)).where(Submission.form_id == form.id)
+        )
+        submission_count = count_result.scalar() or 0
+        
+        form_dict = {
+            "id": form.id,
+            "public_code": form.public_code,
+            "title": form.title,
+            "description": form.description,
+            "status": form.status,
+            "is_public": form.is_public,
+            "submission_count": submission_count,
+            "created_at": form.created_at,
+            "updated_at": form.updated_at
+        }
+        form_list.append(form_dict)
+    
+    return form_list
+
 @router.get("", response_model=List[FormListResponse])
 async def list_forms(
     skip: int = Query(0, ge=0),
